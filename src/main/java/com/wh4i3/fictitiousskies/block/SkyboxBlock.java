@@ -30,6 +30,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 
 public class SkyboxBlock extends BaseEntityBlock {
+
 	public enum Sky implements StringRepresentable {
 		CLOUDS("clouds", FictitiousSkies.id("textures/environment/skybox.png"), true),
 		SATARA_NIGHT_NO_LAMPS("satara_night_no_lamps", FictitiousSkies.id("textures/environment/satara_night_no_lamps.png"), true),
@@ -70,6 +71,8 @@ public class SkyboxBlock extends BaseEntityBlock {
 
 	public static final MapCodec<SkyboxBlock> CODEC = simpleCodec(SkyboxBlock::new);
 	public static final EnumProperty<Sky> SKY = EnumProperty.create("sky", Sky.class);
+	private static int MAX_COOLDOWN = 10;
+	private int cooldown = 0;
 
 	public @NotNull MapCodec<SkyboxBlock> codec() {
 		return CODEC;
@@ -81,13 +84,26 @@ public class SkyboxBlock extends BaseEntityBlock {
 		registerDefaultState(stateDefinition.any()
 				.setValue(SKY, Sky.CLOUDS)
 		);
+
+		this.cooldown = 0;
 	}
+
+	public boolean shouldUpdateSky;
 
 	@Override
 	protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
 		super.tick(state, level, pos, random);
+		this.cooldown--;
 
-		updateSky(state.getValue(SKY), state, level, pos);
+		FictitiousSkies.LOGGER.debug(this.cooldown + "");
+		
+		if (shouldUpdateSky) {
+			updateSky(state.getValue(SKY), state, level, pos);
+			shouldUpdateSky = false;
+		}
+		if (this.cooldown > 0) {
+			level.scheduleTick(pos, state.getBlock(), 1);
+		}
 	}
 
 	@Override
@@ -113,6 +129,15 @@ public class SkyboxBlock extends BaseEntityBlock {
 		return InteractionResult.TRY_WITH_EMPTY_HAND;
 	}
 
+	public void resetCooldown() {
+		this.cooldown = MAX_COOLDOWN;
+		this.shouldUpdateSky = true;
+	}
+
+	public int getCooldown() {
+		return this.cooldown;
+	}
+
 	public void updateSky(Sky sky, BlockState state, Level level, BlockPos pos) {
 		level.setBlockAndUpdate(pos, state.setValue(SKY, sky));
 
@@ -127,8 +152,12 @@ public class SkyboxBlock extends BaseEntityBlock {
 			if (checkedState.getValue(SKY) != prev) {
 				continue;
 			}
+			if (((SkyboxBlock) checkedState.getBlock()).getCooldown() > 0) {
+				continue;
+			}
+
+			((SkyboxBlock)checkedState.getBlock()).resetCooldown();
 			level.setBlockAndUpdate(checkedPos, checkedState.setValue(SKY, sky));
-			level.scheduleTick(checkedPos, checkedState.getBlock(), 1);
 		}
 	}
 }
