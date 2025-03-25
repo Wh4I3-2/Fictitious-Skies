@@ -1,6 +1,7 @@
 package com.wh4i3.fictitiousskies.init;
 
 import com.wh4i3.fictitiousskies.FictitiousSkies;
+import com.wh4i3.fictitiousskies.block.SkyGeneratorBlock;
 import com.wh4i3.fictitiousskies.block.SkyboxBlock;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -21,8 +22,15 @@ public class ModBlocks {
             () -> new SkyboxBlock(BlockBehaviour.Properties.of()
                     .setId(blockId("skybox_block"))
                     .strength(1.5F)
-                    .sound(SoundType.WOOD)
-                    .noOcclusion()
+                    .sound(SoundType.METAL)
+            )
+    );
+    public static final DeferredBlock<SkyGeneratorBlock> SKY_GENERATOR = registerBlock(
+            "sky_generator",
+            () -> new SkyGeneratorBlock(BlockBehaviour.Properties.of()
+                    .setId(blockId("sky_generator"))
+                    .strength(1.5F)
+                    .sound(SoundType.METAL)
             )
     );
 

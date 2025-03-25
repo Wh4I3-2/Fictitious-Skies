@@ -1,0 +1,6 @@
+{
+    "parent": "fictitious_skies:block/sky_generator",
+    "textures": {
+        "bottom": "fictitious_skies:block/sky_generator_back_on"
+    }
+}

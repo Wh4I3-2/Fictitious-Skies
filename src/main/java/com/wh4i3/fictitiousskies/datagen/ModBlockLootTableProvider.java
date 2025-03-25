@@ -18,6 +18,7 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
     @Override
     protected void generate() {
         dropSelf(ModBlocks.SKYBOX_BLOCK.get());
+        dropSelf(ModBlocks.SKY_GENERATOR.get());
     }
 
     @Override

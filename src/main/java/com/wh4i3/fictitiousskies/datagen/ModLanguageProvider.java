@@ -26,6 +26,7 @@ public class ModLanguageProvider extends LanguageProvider {
 
         // Adds a block translation.
         addBlock(ModBlocks.SKYBOX_BLOCK, "Skybox Block");
+        addBlock(ModBlocks.SKY_GENERATOR, "Sky Generator");
 
 
         // Adds a generic translation

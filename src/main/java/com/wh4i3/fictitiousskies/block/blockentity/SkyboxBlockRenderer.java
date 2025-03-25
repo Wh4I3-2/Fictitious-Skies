@@ -32,11 +32,15 @@ public class SkyboxBlockRenderer<T extends SkyboxBlockEntity> implements BlockEn
 
 	public SkyboxBlockRenderer(BlockEntityRendererProvider.Context context) {
 		for (SkyboxBlock.Sky value : SkyboxBlock.Sky.values()) {
+			if (value == SkyboxBlock.Sky.NONE) continue;
 			RENDER_TYPES.put(value, createRenderType(value));
 		}
 	}
 
 	public void render(@NotNull T blockEntity, float p_112651_, PoseStack poseStack, @NotNull MultiBufferSource buffer, int p_112654_, int p_112655_) {
+		if (blockEntity.getBlockState().getValue(SkyboxBlock.SKY) == SkyboxBlock.Sky.NONE) {
+			return;
+		}
 		Matrix4f matrix4f = poseStack.last().pose();
 
 		CompiledShaderProgram shader = RenderSystem.setShader(ModShaders.SKYBOX);
