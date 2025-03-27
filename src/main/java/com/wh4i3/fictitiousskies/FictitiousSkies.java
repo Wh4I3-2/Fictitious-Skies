@@ -1,12 +1,14 @@
 package com.wh4i3.fictitiousskies;
 
 import com.mojang.logging.LogUtils;
-import com.wh4i3.fictitiousskies.block.blockentity.SkyboxBlockRenderer;
 import com.wh4i3.fictitiousskies.client.ModShaders;
+import com.wh4i3.fictitiousskies.client.render.SkyGeneratorRenderer;
+import com.wh4i3.fictitiousskies.client.render.SkyboxBlockRenderer;
 import com.wh4i3.fictitiousskies.config.ClientConfig;
 import com.wh4i3.fictitiousskies.init.ModBlockEntities;
 import com.wh4i3.fictitiousskies.init.ModBlocks;
 import com.wh4i3.fictitiousskies.init.ModCreativeTabs;
+import com.wh4i3.fictitiousskies.init.ModDataComponentType;
 import com.wh4i3.fictitiousskies.init.ModItems;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -21,7 +23,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
-import net.neoforged.neoforge.common.NeoForge;
 import org.slf4j.Logger;
 
 @Mod(FictitiousSkies.MODID)
@@ -31,6 +32,7 @@ public class FictitiousSkies {
 
     public FictitiousSkies(IEventBus modEventBus, ModContainer modContainer) {
         // Register things
+        ModDataComponentType.DATA_COMPONENTS.register(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
         ModBlockEntities.BLOCK_ENTITIES.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
@@ -70,6 +72,7 @@ public class FictitiousSkies {
         @SubscribeEvent
         private static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerBlockEntityRenderer(ModBlockEntities.SKYBOX_BLOCK_ENTITY.get(), SkyboxBlockRenderer::new);
+            event.registerBlockEntityRenderer(ModBlockEntities.SKY_GENERATOR_BLOCK_ENTITY.get(), SkyGeneratorRenderer::new);
         }
 
         @SubscribeEvent

@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.wh4i3.fictitiousskies.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "fictitiousskies.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

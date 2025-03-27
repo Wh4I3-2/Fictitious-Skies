@@ -1,0 +1,97 @@
+{
+  "variants": {
+    "facing=down,powered=false,has_item=false": {
+      "model": "fictitious_skies:block/sky_generator_empty",
+      "x": 90
+    },
+    "facing=down,powered=true,has_item=false": {
+      "model": "fictitious_skies:block/sky_generator_empty_on",
+      "x": 90
+    },
+    "facing=east,powered=false,has_item=false": {
+      "model": "fictitious_skies:block/sky_generator_empty",
+      "y": 90
+    },
+    "facing=east,powered=true,has_item=false": {
+      "model": "fictitious_skies:block/sky_generator_empty_on",
+      "y": 90
+    },
+    "facing=north,powered=false,has_item=false": {
+      "model": "fictitious_skies:block/sky_generator_empty"
+    },
+    "facing=north,powered=true,has_item=false": {
+      "model": "fictitious_skies:block/sky_generator_empty_on"
+    },
+    "facing=south,powered=false,has_item=false": {
+      "model": "fictitious_skies:block/sky_generator_empty",
+      "y": 180
+    },
+    "facing=south,powered=true,has_item=false": {
+      "model": "fictitious_skies:block/sky_generator_empty_on",
+      "y": 180
+    },
+    "facing=up,powered=false,has_item=false": {
+      "model": "fictitious_skies:block/sky_generator_empty",
+      "x": 270
+    },
+    "facing=up,powered=true,has_item=false": {
+      "model": "fictitious_skies:block/sky_generator_empty_on",
+      "x": 270
+    },
+    "facing=west,powered=false,has_item=false": {
+      "model": "fictitious_skies:block/sky_generator_empty",
+      "y": 270
+    },
+    "facing=west,powered=true,has_item=false": {
+      "model": "fictitious_skies:block/sky_generator_empty_on",
+      "y": 270
+    },
+
+    "facing=down,powered=false,has_item=true": {
+      "model": "fictitious_skies:block/sky_generator",
+      "x": 90
+    },
+    "facing=down,powered=true,has_item=true": {
+      "model": "fictitious_skies:block/sky_generator_on",
+      "x": 90
+    },
+    "facing=east,powered=false,has_item=true": {
+      "model": "fictitious_skies:block/sky_generator",
+      "y": 90
+    },
+    "facing=east,powered=true,has_item=true": {
+      "model": "fictitious_skies:block/sky_generator_on",
+      "y": 90
+    },
+    "facing=north,powered=false,has_item=true": {
+      "model": "fictitious_skies:block/sky_generator"
+    },
+    "facing=north,powered=true,has_item=true": {
+      "model": "fictitious_skies:block/sky_generator_on"
+    },
+    "facing=south,powered=false,has_item=true": {
+      "model": "fictitious_skies:block/sky_generator",
+      "y": 180
+    },
+    "facing=south,powered=true,has_item=true": {
+      "model": "fictitious_skies:block/sky_generator_on",
+      "y": 180
+    },
+    "facing=up,powered=false,has_item=true": {
+      "model": "fictitious_skies:block/sky_generator",
+      "x": 270
+    },
+    "facing=up,powered=true,has_item=true": {
+      "model": "fictitious_skies:block/sky_generator_on",
+      "x": 270
+    },
+    "facing=west,powered=false,has_item=true": {
+      "model": "fictitious_skies:block/sky_generator",
+      "y": 270
+    },
+    "facing=west,powered=true,has_item=true": {
+      "model": "fictitious_skies:block/sky_generator_on",
+      "y": 270
+    }
+  }
+}

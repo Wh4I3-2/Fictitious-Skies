@@ -10,6 +10,8 @@ import net.minecraft.world.item.Item;
 
 import java.util.concurrent.CompletableFuture;
 
+import javax.annotation.Nonnull;
+
 /* Handles Data Generation for Recipes of the Wotr mod */
 public class ModRecipeProvider extends RecipeProvider {
 
@@ -18,6 +20,7 @@ public class ModRecipeProvider extends RecipeProvider {
         super(provider, output);
     }
 
+    @SuppressWarnings("unused")
     @Override
     protected void buildRecipes() {
         HolderGetter<Item> getter = this.registries.lookupOrThrow(Registries.ITEM);
@@ -31,7 +34,7 @@ public class ModRecipeProvider extends RecipeProvider {
         }
 
         @Override
-        protected RecipeProvider createRecipeProvider(HolderLookup.Provider provider, RecipeOutput output) {
+        protected RecipeProvider createRecipeProvider(@Nonnull HolderLookup.Provider provider, @Nonnull RecipeOutput output) {
             return new ModRecipeProvider(provider, output);
         }
 

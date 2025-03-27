@@ -16,7 +16,6 @@ public class DataGenerators {
     @SubscribeEvent
     public static void gatherData(GatherDataEvent.Client event) {
         event.createProvider(ModLanguageProvider::new);
-        event.createProvider(ModModelProvider::new);
         event.createProvider((output, lookupProvider) -> new LootTableProvider(
                 output, Set.of(), List.of(new LootTableProvider.SubProviderEntry(ModBlockLootTableProvider::new, LootContextParamSets.BLOCK)), lookupProvider
         ));

@@ -1,46 +1,48 @@
-package com.wh4i3.fictitiousskies.block.blockentity;
+package com.wh4i3.fictitiousskies.client.render;
 
 import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import com.wh4i3.fictitiousskies.FictitiousSkies;
-import com.wh4i3.fictitiousskies.block.SkyboxBlock;
+import com.wh4i3.fictitiousskies.block.blockentity.SkyboxBlockEntity;
 import com.wh4i3.fictitiousskies.client.ModShaders;
-import net.minecraft.client.CameraType;
+import com.wh4i3.fictitiousskies.init.ModBlockEntities;
+import com.wh4i3.fictitiousskies.init.ModDataComponentType;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix4f;
 
-import java.util.HashMap;
+import javax.annotation.Nonnull;
+
+import org.joml.Matrix4f;
 
 @OnlyIn(Dist.CLIENT)
 public class SkyboxBlockRenderer<T extends SkyboxBlockEntity> implements BlockEntityRenderer<T> {
-	private static final RenderStateShard.ShaderStateShard SKYBOX_SHADER = new RenderStateShard.ShaderStateShard(ModShaders.SKYBOX);
-
-	public static final HashMap<SkyboxBlock.Sky, RenderType> RENDER_TYPES = HashMap.newHashMap(SkyboxBlock.Sky.values().length);
+	private final BlockEntityRendererProvider.Context context;
 
 	public SkyboxBlockRenderer(BlockEntityRendererProvider.Context context) {
-		for (SkyboxBlock.Sky value : SkyboxBlock.Sky.values()) {
-			if (value == SkyboxBlock.Sky.NONE) continue;
-			RENDER_TYPES.put(value, createRenderType(value));
-		}
+		this.context = context;
 	}
 
-	public void render(@NotNull T blockEntity, float p_112651_, PoseStack poseStack, @NotNull MultiBufferSource buffer, int p_112654_, int p_112655_) {
-		if (blockEntity.getBlockState().getValue(SkyboxBlock.SKY) == SkyboxBlock.Sky.NONE) {
-			return;
-		}
+	public void render(@Nonnull T blockEntity, float p_112651_, @Nonnull PoseStack poseStack, @Nonnull MultiBufferSource buffer, int p_112654_, int p_112655_) {
+		if (blockEntity.isRemoved()) return;
+		Level level = blockEntity.getLevel();
+		if (level == null) return;
+		if (blockEntity.getSkyboxLocation() == null) return;
+		if (blockEntity.getSkyboxLocation() == ModDataComponentType.Skybox.EMPTY.skyboxLocation()) return;
+		if (!ResourceLocation.isValidNamespace(blockEntity.getSkyboxLocation().getNamespace())) return;
+		if (!ResourceLocation.isValidPath(blockEntity.getSkyboxLocation().getPath())) return;
+
 		Matrix4f matrix4f = poseStack.last().pose();
 
 		CompiledShaderProgram shader = RenderSystem.setShader(ModShaders.SKYBOX);
@@ -52,17 +54,20 @@ public class SkyboxBlockRenderer<T extends SkyboxBlockEntity> implements BlockEn
 
 			Uniform view = shader.getUniform("View");
 			if (view != null) {
-				float x = Minecraft.getInstance().cameraEntity.getXRot();
-				if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_FRONT) {
-					x *= -1;
-				}
-				float y = Mth.wrapDegrees(Minecraft.getInstance().cameraEntity.getYRot());
+				float x = context.getBlockEntityRenderDispatcher().camera.getXRot();
+				float y = Mth.wrapDegrees(context.getBlockEntityRenderDispatcher().camera.getYRot());
 				view.set(x, y);
 			}
 
 			shader.apply();
 		}
-		this.renderCube(blockEntity, matrix4f, buffer.getBuffer(RENDER_TYPES.get(blockEntity.getBlockState().getValue(SkyboxBlock.SKY))));
+
+		ResourceLocation location = blockEntity.getSkyboxLocation();
+		boolean blur = blockEntity.getBlur();
+
+		FictitiousSkies.LOGGER.info(location.toString());
+
+		this.renderCube(blockEntity, matrix4f, buffer.getBuffer(SkyGeneratorRenderType.skybox(location, blur)));
 	}
 
 	private void renderCube(T blockEntity, Matrix4f pose, VertexConsumer consumer) {
@@ -88,10 +93,11 @@ public class SkyboxBlockRenderer<T extends SkyboxBlockEntity> implements BlockEn
 			float z3,
 			Direction direction
 	) {
-		if (blockEntity.getLevel() == null) {
+		Level level = blockEntity.getLevel();
+		if (level == null) {
 			return;
 		}
-		BlockState neighbor = blockEntity.getLevel().getBlockState(blockEntity.getBlockPos().subtract(direction.getUnitVec3i().multiply(-1)));
+		BlockState neighbor = level.getBlockState(blockEntity.getBlockPos().subtract(direction.getUnitVec3i().multiply(-1)));
 		if (neighbor.is(blockEntity.getBlockState().getBlock())) {
 			return;
 		}
@@ -103,23 +109,5 @@ public class SkyboxBlockRenderer<T extends SkyboxBlockEntity> implements BlockEn
 		consumer.addVertex(pose, x1, y0, z1);
 		consumer.addVertex(pose, x1, y1, z2);
 		consumer.addVertex(pose, x0, y1, z3);
-	}
-
-
-	private static RenderType createRenderType(SkyboxBlock.Sky sky)  {
-		return RenderType.create(
-				FictitiousSkies.MODID + "_skybox_" + sky.name(),
-				DefaultVertexFormat.POSITION,
-				VertexFormat.Mode.QUADS,
-				1536,
-				false,
-				false,
-				RenderType.CompositeState.builder()
-						.setShaderState(SKYBOX_SHADER)
-						.setTextureState(RenderStateShard.MultiTextureStateShard.builder()
-								.add(sky.getSkyLocation(), sky.getBlur(), false)
-								.build()
-						).createCompositeState(false)
-		);
 	}
 }

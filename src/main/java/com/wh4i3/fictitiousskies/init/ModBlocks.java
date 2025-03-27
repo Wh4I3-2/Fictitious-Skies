@@ -30,6 +30,7 @@ public class ModBlocks {
             () -> new SkyGeneratorBlock(BlockBehaviour.Properties.of()
                     .setId(blockId("sky_generator"))
                     .strength(1.5F)
+                    .noOcclusion()
                     .sound(SoundType.METAL)
             )
     );

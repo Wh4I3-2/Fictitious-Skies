@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "fictitious_skies:block/sky_generator_empty"
+  }
+}
