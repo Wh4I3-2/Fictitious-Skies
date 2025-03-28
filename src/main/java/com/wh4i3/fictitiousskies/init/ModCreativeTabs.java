@@ -15,6 +15,9 @@ public class ModCreativeTabs {
                     () -> CreativeModeTab.builder()
                             .title(Component.translatable("itemGroup." + FictitiousSkies.MODID))
                             .displayItems((parameters, output) -> {
+                                output.accept(ModItems.B_ROLL.get());
+                                output.accept(ModItems.createBRoll(FictitiousSkies.id("textures/environment/starmap_2020.png"), true, "starmap_2020"));
+                                output.accept(ModItems.createBRoll(FictitiousSkies.id("textures/environment/skybox.png"), true, "clouds"));
                                 ModItems.BLOCK_ITEMS.forEach(item -> output.accept(item.get()));
                             }).build());
 

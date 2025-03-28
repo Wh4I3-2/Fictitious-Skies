@@ -1,5 +1,10 @@
 {
   "block.fictitious_skies.sky_generator": "Sky Generator",
   "block.fictitious_skies.skybox_block": "Skybox Block",
+  "item.fictitious_skies.b_roll": "B-Roll",
+
+  "b_roll.starmap_2020": "Starmap 2020",
+  "b_roll.clouds": "Clouds",
+
   "itemGroup.fictitious_skies": "Fictitious Skies"
 }

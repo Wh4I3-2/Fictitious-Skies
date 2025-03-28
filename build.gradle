@@ -8,6 +8,10 @@ plugins {
 version = mod_version
 group = mod_group_id
 
+tasks.withType(Copy).all {
+    duplicatesStrategy 'include'
+}
+
 repositories {
     mavenLocal()
     maven { url = "https://api.modrinth.com/maven" }
@@ -46,7 +50,6 @@ neoForge {
     runs {
         client {
             client()
-
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }

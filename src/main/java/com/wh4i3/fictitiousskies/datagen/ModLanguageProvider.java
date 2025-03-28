@@ -2,10 +2,13 @@ package com.wh4i3.fictitiousskies.datagen;
 
 import com.wh4i3.fictitiousskies.FictitiousSkies;
 import com.wh4i3.fictitiousskies.init.ModBlocks;
+import com.wh4i3.fictitiousskies.init.ModItems;
+
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.LanguageProvider;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
@@ -27,7 +30,7 @@ public class ModLanguageProvider extends LanguageProvider {
         // Adds a block translation.
         addBlock(ModBlocks.SKYBOX_BLOCK, "Skybox Block");
         addBlock(ModBlocks.SKY_GENERATOR, "Sky Generator");
-
+        addItem(ModItems.B_ROLL, "B-Roll");
 
         // Adds a generic translation
         add("itemGroup." + FictitiousSkies.MODID, "Fictitious Skies");

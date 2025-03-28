@@ -5,9 +5,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.wh4i3.fictitiousskies.FictitiousSkies;
+import com.wh4i3.fictitiousskies.block.SkyboxBlock;
 import com.wh4i3.fictitiousskies.block.blockentity.SkyboxBlockEntity;
 import com.wh4i3.fictitiousskies.client.ModShaders;
-import com.wh4i3.fictitiousskies.init.ModBlockEntities;
 import com.wh4i3.fictitiousskies.init.ModDataComponentType;
 
 import net.minecraft.client.Minecraft;
@@ -42,6 +42,7 @@ public class SkyboxBlockRenderer<T extends SkyboxBlockEntity> implements BlockEn
 		if (blockEntity.getSkyboxLocation() == ModDataComponentType.Skybox.EMPTY.skyboxLocation()) return;
 		if (!ResourceLocation.isValidNamespace(blockEntity.getSkyboxLocation().getNamespace())) return;
 		if (!ResourceLocation.isValidPath(blockEntity.getSkyboxLocation().getPath())) return;
+		if (!blockEntity.getBlockState().getValue(SkyboxBlock.HAS_SKY)) return;
 
 		Matrix4f matrix4f = poseStack.last().pose();
 
@@ -64,8 +65,6 @@ public class SkyboxBlockRenderer<T extends SkyboxBlockEntity> implements BlockEn
 
 		ResourceLocation location = blockEntity.getSkyboxLocation();
 		boolean blur = blockEntity.getBlur();
-
-		FictitiousSkies.LOGGER.info(location.toString());
 
 		this.renderCube(blockEntity, matrix4f, buffer.getBuffer(SkyGeneratorRenderType.skybox(location, blur)));
 	}

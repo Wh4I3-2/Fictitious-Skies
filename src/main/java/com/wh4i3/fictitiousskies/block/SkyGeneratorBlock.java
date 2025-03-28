@@ -67,12 +67,12 @@ public class SkyGeneratorBlock extends BaseEntityBlock {
 	protected InteractionResult useItemOn(@Nonnull ItemStack stack, @Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos, @Nonnull Player player, @Nonnull InteractionHand hand, @Nonnull BlockHitResult hitResult) {
 		SkyGeneratorBlockEntity entity = (SkyGeneratorBlockEntity)level.getBlockEntity(pos);
 		if (entity == null) return InteractionResult.TRY_WITH_EMPTY_HAND;
+		if (!stack.getComponents().has(ModDataComponentType.SKYBOX.get())) return InteractionResult.FAIL;
 		if (entity.getTheItem() != ItemStack.EMPTY) {
-			if (entity.getTheItem().getItem() == stack.getItem()) return InteractionResult.SUCCESS;
+			if (entity.getTheItem().getComponents().get(ModDataComponentType.SKYBOX.get()) == stack.getComponents().get(ModDataComponentType.SKYBOX.get())) return InteractionResult.PASS;
 			Containers.dropContents(level, pos, entity);
 		}
 		if (stack == ItemStack.EMPTY) return InteractionResult.SUCCESS;
-		if (!stack.getComponents().has(ModDataComponentType.SKYBOX.get())) return InteractionResult.FAIL;
 		entity.setTheItem(stack.copyWithCount(1));
 		stack.setCount(stack.getCount()-1);
 		level.setBlockAndUpdate(pos, state.setValue(HAS_ITEM, !entity.isEmpty()));
