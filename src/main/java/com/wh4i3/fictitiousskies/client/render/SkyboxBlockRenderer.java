@@ -91,10 +91,10 @@ public class SkyboxBlockRenderer<T extends SkyboxBlockEntity> implements BlockEn
 			float z3,
 			Direction direction
 	) {
+		if (pose == null) return;
+		if (blockEntity == null) return;
 		Level level = blockEntity.getLevel();
-		if (level == null) {
-			return;
-		}
+		if (level == null) return;
 		BlockState neighbor = level.getBlockState(blockEntity.getBlockPos().subtract(direction.getUnitVec3i().multiply(-1)));
 		if (neighbor.is(blockEntity.getBlockState().getBlock())) {
 			return;

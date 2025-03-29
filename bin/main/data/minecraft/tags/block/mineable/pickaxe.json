@@ -1,7 +1,7 @@
 {
   "values": [
     "fictitious_skies:skybox_block",
-    "fictitious_skies:indestructible_skybox_block",
+    "fictitious_skies:alt_skybox_block",
     "fictitious_skies:sky_generator"
   ]
 }

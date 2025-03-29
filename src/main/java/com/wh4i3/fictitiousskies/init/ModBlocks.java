@@ -23,7 +23,8 @@ public class ModBlocks {
             () -> new SkyboxBlock(BlockBehaviour.Properties.of()
                     .setId(blockId("skybox_block"))
                     .strength(1.5F)
-                    .destroyTime(1.2F)
+                    .explosionResistance(0.5F)
+                    .destroyTime(2.25F)
                     .sound(SoundType.METAL)
             )
     );
@@ -32,7 +33,8 @@ public class ModBlocks {
             () -> new SkyboxBlock(BlockBehaviour.Properties.of()
                     .setId(blockId("alt_skybox_block"))
                     .strength(1.5F)
-                    .destroyTime(1.2F)
+                    .explosionResistance(0.5F)
+                    .destroyTime(2.25F)
                     .sound(SoundType.METAL)
             )
     );
@@ -41,6 +43,7 @@ public class ModBlocks {
             () -> new SkyboxBlock(BlockBehaviour.Properties.of()
                     .setId(blockId("indestructible_skybox_block"))
                     .strength(999999F)
+                    .explosionResistance(999999F)
                     .destroyTime(-1.0F)
                     .sound(SoundType.METAL)
             ),
@@ -51,6 +54,7 @@ public class ModBlocks {
             () -> new SkyboxBlock(BlockBehaviour.Properties.of()
                     .setId(blockId("alt_indestructible_skybox_block"))
                     .strength(999999F)
+                    .explosionResistance(999999F)
                     .destroyTime(-1.0F)
                     .sound(SoundType.METAL)
             ),
@@ -61,7 +65,8 @@ public class ModBlocks {
             () -> new SkyGeneratorBlock(BlockBehaviour.Properties.of()
                     .setId(blockId("sky_generator"))
                     .strength(3.0F)
-                    .destroyTime(1.9F)
+                    .destroyTime(2.65F)
+                    .requiresCorrectToolForDrops()
                     .noOcclusion()
                     .sound(SoundType.METAL)
             )

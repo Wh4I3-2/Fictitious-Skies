@@ -3,6 +3,7 @@ package com.wh4i3.fictitiousskies.block;
 import com.mojang.serialization.MapCodec;
 import com.wh4i3.fictitiousskies.block.blockentity.SkyboxBlockEntity;
 import com.wh4i3.fictitiousskies.init.ModDataComponentType;
+import com.wh4i3.fictitiousskies.init.ModItems;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -68,6 +69,21 @@ public class SkyboxBlock extends BaseEntityBlock {
 
 	@Override
 	protected InteractionResult useItemOn(@Nonnull ItemStack stack, @Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos, @Nonnull Player player, @Nonnull InteractionHand hand, @Nonnull BlockHitResult hitResult) {
+		if (stack == ItemStack.EMPTY) return InteractionResult.TRY_WITH_EMPTY_HAND;
+		if (stack.getItem() == ModItems.EMPTY_SKY_DISK.get()) {
+			ModDataComponentType.Skybox skybox = ModDataComponentType.Skybox.EMPTY;
+			BlockEntity targetEntity = level.getBlockEntity(pos);
+			if (targetEntity instanceof SkyboxBlockEntity) {
+				if (skybox != null) {
+					((SkyboxBlockEntity)targetEntity).setSkyboxLocation(skybox.skyboxLocation());
+					((SkyboxBlockEntity)targetEntity).setBlur(skybox.blur());;
+				}
+				targetEntity.setChanged();
+				level.gameEvent(GameEvent.BLOCK_CHANGE, targetEntity.getBlockPos(), GameEvent.Context.of(targetEntity.getBlockState()));
+				level.scheduleTick(pos, targetEntity.getBlockState().getBlock(), 1);
+			}
+			return InteractionResult.SUCCESS;
+		}
 		if (stack.has(ModDataComponentType.SKYBOX.get())) {
 			ModDataComponentType.Skybox skybox = stack.get(ModDataComponentType.SKYBOX.get());
 			BlockEntity targetEntity = level.getBlockEntity(pos);

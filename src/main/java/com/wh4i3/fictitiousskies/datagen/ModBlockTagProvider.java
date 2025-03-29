@@ -21,7 +21,7 @@ public class ModBlockTagProvider extends BlockTagsProvider {
     protected void addTags(@Nonnull HolderLookup.Provider provider) {
         this.tag(BlockTags.MINEABLE_WITH_PICKAXE)
             .add(ModBlocks.SKYBOX_BLOCK.get())
-            .add(ModBlocks.INDESTRUCTIBLE_SKYBOX_BLOCK.get())
+            .add(ModBlocks.ALT_SKYBOX_BLOCK.get())
             .add(ModBlocks.SKY_GENERATOR.get());
     }
 }
