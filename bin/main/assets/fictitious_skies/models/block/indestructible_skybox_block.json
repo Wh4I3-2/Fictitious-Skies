@@ -1,0 +1,6 @@
+{
+  "parent": "fictitious_skies:block/template/skybox_block",
+  "textures": {
+    "all": "fictitious_skies:block/indestructible_skybox_block"
+  }
+}

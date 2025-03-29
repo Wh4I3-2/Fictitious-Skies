@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "fictitious_skies:block/alt_skybox_block"
+    }
+  }
+}

@@ -28,9 +28,14 @@ public class ModLanguageProvider extends LanguageProvider {
         // See https://docs.neoforged.net/docs/1.21.1/resources/client/i18n/ for translation of other types.
 
         // Adds a block translation.
-        addBlock(ModBlocks.SKYBOX_BLOCK, "Skybox Block");
-        addBlock(ModBlocks.SKY_GENERATOR, "Sky Generator");
-        addItem(ModItems.B_ROLL, "B-Roll");
+        addBlock(ModBlocks.SKYBOX_BLOCK, "Sky Panel");
+        addBlock(ModBlocks.ALT_SKYBOX_BLOCK, "Shined Sky Panel");
+        addBlock(ModBlocks.INDESTRUCTIBLE_SKYBOX_BLOCK, "Indestructible Sky Panel");
+        addBlock(ModBlocks.ALT_INDESTRUCTIBLE_SKYBOX_BLOCK, "Shined Indestructible Sky Panel");
+        addBlock(ModBlocks.SKY_GENERATOR, "Sky Projector");
+
+        addItem(ModItems.B_ROLL, "Sky Disk");
+        addItem(ModItems.EMPTY_SKY_DISK, "Empty Sky Disk");
 
         // Adds a generic translation
         add("itemGroup." + FictitiousSkies.MODID, "Fictitious Skies");

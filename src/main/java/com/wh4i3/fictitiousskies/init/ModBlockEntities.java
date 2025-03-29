@@ -19,7 +19,10 @@ public class ModBlockEntities {
             () -> new BlockEntityType<>(
                     SkyboxBlockEntity::new,
                     Set.of(
-                            ModBlocks.SKYBOX_BLOCK.get()
+                            ModBlocks.SKYBOX_BLOCK.get(),
+                            ModBlocks.ALT_SKYBOX_BLOCK.get(),
+                            ModBlocks.INDESTRUCTIBLE_SKYBOX_BLOCK.get(),
+                            ModBlocks.ALT_INDESTRUCTIBLE_SKYBOX_BLOCK.get()
                     )
             )
     );

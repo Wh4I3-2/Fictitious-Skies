@@ -1,10 +1,10 @@
 {
-  "block.fictitious_skies.sky_generator": "Sky Generator",
-  "block.fictitious_skies.skybox_block": "Skybox Block",
-  "item.fictitious_skies.b_roll": "B-Roll",
-
-  "b_roll.starmap_2020": "Starmap 2020",
-  "b_roll.clouds": "Clouds",
-
+  "block.fictitious_skies.alt_indestructible_skybox_block": "Shined Indestructible Sky Panel",
+  "block.fictitious_skies.alt_skybox_block": "Shined Sky Panel",
+  "block.fictitious_skies.indestructible_skybox_block": "Indestructible Sky Panel",
+  "block.fictitious_skies.sky_generator": "Sky Projector",
+  "block.fictitious_skies.skybox_block": "Sky Panel",
+  "item.fictitious_skies.b_roll": "Sky Disk",
+  "item.fictitious_skies.empty_sky_disk": "Empty Sky Disk",
   "itemGroup.fictitious_skies": "Fictitious Skies"
 }

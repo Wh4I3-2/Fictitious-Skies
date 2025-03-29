@@ -1,0 +1,6 @@
+{
+    "parent": "minecraft:item/generated",
+    "textures": {
+        "layer0": "fictitious_skies:item/empty_sky_disk"
+    }
+}

@@ -6,14 +6,12 @@ import javax.annotation.Nullable;
 import com.mojang.serialization.MapCodec;
 import com.wh4i3.fictitiousskies.block.blockentity.SkyGeneratorBlockEntity;
 import com.wh4i3.fictitiousskies.block.blockentity.SkyboxBlockEntity;
-import com.wh4i3.fictitiousskies.init.ModDataComponentType;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
@@ -26,6 +24,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
 
@@ -50,35 +49,28 @@ public class SkyGeneratorBlock extends BaseEntityBlock {
 		return CODEC;
 	}
 
-	@Override
-	protected InteractionResult useWithoutItem(@Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos, @Nonnull Player player, @Nonnull BlockHitResult hitResult) {
-		SkyGeneratorBlockEntity entity = (SkyGeneratorBlockEntity)level.getBlockEntity(pos);
-		if (entity == null) return InteractionResult.PASS;
-		if (entity.getTheItem() != ItemStack.EMPTY) {
-			Containers.dropContents(level, pos, entity);
-		}
-		entity.setTheItem(ItemStack.EMPTY);
-		level.setBlockAndUpdate(pos, state.setValue(HAS_ITEM, !entity.isEmpty()));
-		entity.setChanged();
-		return InteractionResult.PASS;
-	}
 
-	@Override
-	protected InteractionResult useItemOn(@Nonnull ItemStack stack, @Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos, @Nonnull Player player, @Nonnull InteractionHand hand, @Nonnull BlockHitResult hitResult) {
-		SkyGeneratorBlockEntity entity = (SkyGeneratorBlockEntity)level.getBlockEntity(pos);
-		if (entity == null) return InteractionResult.TRY_WITH_EMPTY_HAND;
-		if (!stack.getComponents().has(ModDataComponentType.SKYBOX.get())) return InteractionResult.FAIL;
-		if (entity.getTheItem() != ItemStack.EMPTY) {
-			if (entity.getTheItem().getComponents().get(ModDataComponentType.SKYBOX.get()) == stack.getComponents().get(ModDataComponentType.SKYBOX.get())) return InteractionResult.PASS;
-			Containers.dropContents(level, pos, entity);
-		}
-		if (stack == ItemStack.EMPTY) return InteractionResult.SUCCESS;
-		entity.setTheItem(stack.copyWithCount(1));
-		stack.setCount(stack.getCount()-1);
-		level.setBlockAndUpdate(pos, state.setValue(HAS_ITEM, !entity.isEmpty()));
-		entity.setChanged();
-		return InteractionResult.SUCCESS;
-	}
+    @Override
+    protected InteractionResult useWithoutItem(@Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos, @Nonnull Player player, @Nonnull BlockHitResult result) {
+        if (state.getValue(HAS_ITEM) && level.getBlockEntity(pos) instanceof SkyGeneratorBlockEntity skyGeneratorBlockEntity) {
+            skyGeneratorBlockEntity.popOutTheItem();
+            return InteractionResult.SUCCESS;
+        } else {
+            return InteractionResult.PASS;
+        }
+    }
+
+    @Override
+    protected InteractionResult useItemOn(@Nonnull ItemStack stack, @Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos blockPos, @Nonnull Player player, @Nonnull InteractionHand hand, @Nonnull BlockHitResult result) {
+        if (state.getValue(HAS_ITEM)) {
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
+        } else {
+            ItemStack itemstack = player.getItemInHand(hand);
+			if (itemstack == ItemStack.EMPTY) return InteractionResult.TRY_WITH_EMPTY_HAND;
+            InteractionResult interactionresult = SkyGeneratorBlockEntity.tryInsert(level, blockPos, itemstack, player);
+            return (InteractionResult)(!interactionresult.consumesAction() ? InteractionResult.TRY_WITH_EMPTY_HAND : interactionresult);
+        }
+    }
 
 	protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
 		builder.add(FACING, POWERED, HAS_ITEM);
@@ -107,6 +99,7 @@ public class SkyGeneratorBlock extends BaseEntityBlock {
 					((SkyboxBlockEntity)targetEntity).setSkyboxLocation(entity.getSkybox().skyboxLocation());;
 					((SkyboxBlockEntity)targetEntity).setBlur(entity.getSkybox().blur());;
 					targetEntity.setChanged();
+					level.gameEvent(GameEvent.BLOCK_CHANGE, targetEntity.getBlockPos(), GameEvent.Context.of(targetEntity.getBlockState()));
 					level.scheduleTick(targetPos, targetEntity.getBlockState().getBlock(), 1);
 				}
 			}
