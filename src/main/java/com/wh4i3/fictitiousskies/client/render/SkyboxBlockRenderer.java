@@ -4,6 +4,7 @@ import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.PoseStack.Pose;
 import com.wh4i3.fictitiousskies.block.SkyboxBlock;
 import com.wh4i3.fictitiousskies.block.blockentity.SkyboxBlockEntity;
 import com.wh4i3.fictitiousskies.client.ModShaders;
@@ -23,8 +24,6 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 
-import org.joml.Matrix4f;
-
 @OnlyIn(Dist.CLIENT)
 public class SkyboxBlockRenderer<T extends SkyboxBlockEntity> implements BlockEntityRenderer<T> {
 	private final BlockEntityRendererProvider.Context context;
@@ -43,7 +42,7 @@ public class SkyboxBlockRenderer<T extends SkyboxBlockEntity> implements BlockEn
 		if (!ResourceLocation.isValidPath(blockEntity.getSkyboxLocation().getPath())) return;
 		if (!blockEntity.getBlockState().getValue(SkyboxBlock.HAS_SKY)) return;
 
-		Matrix4f matrix4f = poseStack.last().pose();
+		Pose pose = poseStack.last();
 
 		CompiledShaderProgram shader = RenderSystem.setShader(ModShaders.SKYBOX);
 		if (shader != null) {
@@ -65,10 +64,10 @@ public class SkyboxBlockRenderer<T extends SkyboxBlockEntity> implements BlockEn
 		ResourceLocation location = blockEntity.getSkyboxLocation();
 		boolean blur = blockEntity.getBlur();
 
-		this.renderCube(blockEntity, matrix4f, buffer.getBuffer(SkyGeneratorRenderType.skybox(location, blur)));
+		this.renderCube(blockEntity, pose, buffer.getBuffer(SkyGeneratorRenderType.skybox(location, blur)));
 	}
 
-	private void renderCube(T blockEntity, Matrix4f pose, VertexConsumer consumer) {
+	private void renderCube(T blockEntity, Pose pose, VertexConsumer consumer) {
 		this.renderFace(blockEntity, pose, consumer, 0.0F, 1.0F, 0.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, Direction.SOUTH);
 		this.renderFace(blockEntity, pose, consumer, 0.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, Direction.NORTH);
 		this.renderFace(blockEntity, pose, consumer, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.0F, Direction.EAST);
@@ -79,7 +78,8 @@ public class SkyboxBlockRenderer<T extends SkyboxBlockEntity> implements BlockEn
 
 	private void renderFace(
 			T blockEntity,
-			Matrix4f pose,
+			Pose pose,
+
 			VertexConsumer consumer,
 			float x0,
 			float x1,
@@ -103,9 +103,9 @@ public class SkyboxBlockRenderer<T extends SkyboxBlockEntity> implements BlockEn
 			return;
 		}
 
-		consumer.addVertex(pose, x0, y0, z0);
-		consumer.addVertex(pose, x1, y0, z1);
-		consumer.addVertex(pose, x1, y1, z2);
-		consumer.addVertex(pose, x0, y1, z3);
+		consumer.addVertex(pose.pose(), x0, y0, z0).setColor(0xFFFFFF).setUv(0.0f, 0.0f).setUv2(0, 0).setNormal(pose, direction.step());
+		consumer.addVertex(pose.pose(), x1, y0, z1).setColor(0xFFFFFF).setUv(1.0f, 0.0f).setUv2(1, 0).setNormal(pose, direction.step());
+		consumer.addVertex(pose.pose(), x1, y1, z2).setColor(0xFFFFFF).setUv(1.0f, 1.0f).setUv2(1, 1).setNormal(pose, direction.step());
+		consumer.addVertex(pose.pose(), x0, y1, z3).setColor(0xFFFFFF).setUv(0.0f, 1.0f).setUv2(0, 1).setNormal(pose, direction.step());
 	}
 }
