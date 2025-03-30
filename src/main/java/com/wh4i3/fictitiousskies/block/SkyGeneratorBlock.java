@@ -31,12 +31,18 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
 
+import java.util.function.ToIntFunction;
+
 public class SkyGeneratorBlock extends BaseEntityBlock {
 	public static final MapCodec<SkyGeneratorBlock> CODEC = simpleCodec(SkyGeneratorBlock::new);
 
 	public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
 	public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 	public static final BooleanProperty HAS_ITEM = BooleanProperty.create("has_item");
+	public static final ToIntFunction<BlockState> LIGHT_EMISSION = (state) -> {
+		if (state.getValue(POWERED)) return 12;
+		return state.getValue(HAS_ITEM) ? 8 : 0;
+	};
 
 	public SkyGeneratorBlock(Properties properties) {
 		super(properties);

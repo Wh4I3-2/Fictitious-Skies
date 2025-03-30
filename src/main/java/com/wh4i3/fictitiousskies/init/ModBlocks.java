@@ -26,6 +26,7 @@ public class ModBlocks {
                     .explosionResistance(0.5F)
                     .destroyTime(2.25F)
                     .sound(SoundType.METAL)
+                    .lightLevel(SkyboxBlock.LIGHT_EMISSION)
             )
     );
     public static final DeferredBlock<SkyboxBlock> ALT_SKYBOX_BLOCK = registerBlock(
@@ -36,6 +37,7 @@ public class ModBlocks {
                     .explosionResistance(0.5F)
                     .destroyTime(2.25F)
                     .sound(SoundType.METAL)
+                    .lightLevel(SkyboxBlock.LIGHT_EMISSION)
             )
     );
     public static final DeferredBlock<SkyboxBlock> INDESTRUCTIBLE_SKYBOX_BLOCK = registerBlock(
@@ -46,6 +48,7 @@ public class ModBlocks {
                     .explosionResistance(999999F)
                     .destroyTime(-1.0F)
                     .sound(SoundType.METAL)
+                    .lightLevel(SkyboxBlock.LIGHT_EMISSION)
             ),
             Rarity.EPIC
     );
@@ -57,6 +60,7 @@ public class ModBlocks {
                     .explosionResistance(999999F)
                     .destroyTime(-1.0F)
                     .sound(SoundType.METAL)
+                    .lightLevel(SkyboxBlock.LIGHT_EMISSION)
             ),
             Rarity.EPIC
     );
@@ -69,6 +73,7 @@ public class ModBlocks {
                     .requiresCorrectToolForDrops()
                     .noOcclusion()
                     .sound(SoundType.METAL)
+                    .lightLevel(SkyGeneratorBlock.LIGHT_EMISSION)
             )
     );
 

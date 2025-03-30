@@ -6,6 +6,7 @@ import com.wh4i3.fictitiousskies.init.ModDataComponentType;
 import com.wh4i3.fictitiousskies.init.ModItems;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -14,9 +15,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -27,10 +26,12 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.function.ToIntFunction;
 
 public class SkyboxBlock extends BaseEntityBlock {
 	public static final MapCodec<SkyboxBlock> CODEC = simpleCodec(SkyboxBlock::new);
 	public static final BooleanProperty HAS_SKY = BooleanProperty.create("has_sky");
+	public static final ToIntFunction<BlockState> LIGHT_EMISSION = (state) -> state.getValue(HAS_SKY) ? 15 : 0;
 
 	public @Nonnull MapCodec<SkyboxBlock> codec() {
 		return CODEC;
@@ -114,6 +115,10 @@ public class SkyboxBlock extends BaseEntityBlock {
 			((SkyboxBlockEntity) checkedEntity).setBlur(blur);
 			level.scheduleTick(checkedPos, checkedEntity.getBlockState().getBlock(), 1);
 			level.gameEvent(GameEvent.BLOCK_CHANGE, checkedPos, GameEvent.Context.of(checkedEntity.getBlockState()));
+
+			if (level instanceof ServerLevel serverlevel) {
+				serverlevel.sendParticles(ParticleTypes.WAX_OFF, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 2, 0.5F, 0.5F, 0.5F, 0.1F);
+			}
 		}
 	}
 	
