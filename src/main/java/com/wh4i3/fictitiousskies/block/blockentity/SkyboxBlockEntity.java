@@ -32,6 +32,9 @@ public class SkyboxBlockEntity extends BlockEntity {
 	public boolean getBlur() {
 		return this.blur;
 	}
+	public ModDataComponentType.Skybox getSkybox() {
+		return new ModDataComponentType.Skybox(this.skyboxLocation, this.blur);
+	}
 
 	public SkyboxBlockEntity(BlockPos pos, BlockState state) {
 		super(ModBlockEntities.SKYBOX_BLOCK_ENTITY.get(), pos, state);

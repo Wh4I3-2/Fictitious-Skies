@@ -105,12 +105,12 @@ public class SkyGeneratorBlock extends BaseEntityBlock {
 			if (targetEntity instanceof SkyboxBlockEntity) {
 				SkyGeneratorBlockEntity entity = (SkyGeneratorBlockEntity)level.getBlockEntity(pos);
 				if (entity != null) {
-					((SkyboxBlockEntity)targetEntity).setSkyboxLocation(entity.getSkybox().skyboxLocation());;
-					((SkyboxBlockEntity)targetEntity).setBlur(entity.getSkybox().blur());;
-					targetEntity.setChanged();
-					level.gameEvent(GameEvent.BLOCK_CHANGE, targetEntity.getBlockPos(), GameEvent.Context.of(targetEntity.getBlockState()));
-					level.scheduleTick(targetPos, targetEntity.getBlockState().getBlock(), 1);
+					((SkyboxBlockEntity)targetEntity).setSkyboxLocation(entity.getSkybox().skyboxLocation());
+					((SkyboxBlockEntity)targetEntity).setBlur(entity.getSkybox().blur());
 				}
+				targetEntity.setChanged();
+				level.gameEvent(GameEvent.BLOCK_CHANGE, targetEntity.getBlockPos(), GameEvent.Context.of(targetEntity.getBlockState()));
+				level.scheduleTick(targetPos, targetEntity.getBlockState().getBlock(), 1);
 			}
 		}
 	}

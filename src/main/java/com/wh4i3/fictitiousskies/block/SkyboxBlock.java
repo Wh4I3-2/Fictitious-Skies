@@ -77,7 +77,7 @@ public class SkyboxBlock extends BaseEntityBlock {
 			if (targetEntity instanceof SkyboxBlockEntity) {
 				if (skybox != null) {
 					((SkyboxBlockEntity)targetEntity).setSkyboxLocation(skybox.skyboxLocation());
-					((SkyboxBlockEntity)targetEntity).setBlur(skybox.blur());;
+					((SkyboxBlockEntity)targetEntity).setBlur(skybox.blur());
 				}
 				targetEntity.setChanged();
 				level.gameEvent(GameEvent.BLOCK_CHANGE, targetEntity.getBlockPos(), GameEvent.Context.of(targetEntity.getBlockState()));
@@ -88,16 +88,15 @@ public class SkyboxBlock extends BaseEntityBlock {
 		if (stack.has(ModDataComponentType.SKYBOX.get())) {
 			ModDataComponentType.Skybox skybox = stack.get(ModDataComponentType.SKYBOX.get());
 			BlockEntity targetEntity = level.getBlockEntity(pos);
-			if (targetEntity instanceof SkyboxBlockEntity) {
+			if (targetEntity instanceof SkyboxBlockEntity skyboxBlockEntity) {
 				if (skybox != null) {
-					((SkyboxBlockEntity)targetEntity).setSkyboxLocation(skybox.skyboxLocation());;
-					((SkyboxBlockEntity)targetEntity).setBlur(skybox.blur());;
+					skyboxBlockEntity.setSkyboxLocation(skybox.skyboxLocation());
+					skyboxBlockEntity.setBlur(skybox.blur());
 				}
-				targetEntity.setChanged();
-				level.gameEvent(GameEvent.BLOCK_CHANGE, targetEntity.getBlockPos(), GameEvent.Context.of(targetEntity.getBlockState()));
-				level.scheduleTick(pos, targetEntity.getBlockState().getBlock(), 1);
+				skyboxBlockEntity.setChanged();
+				level.gameEvent(GameEvent.BLOCK_CHANGE, skyboxBlockEntity.getBlockPos(), GameEvent.Context.of(skyboxBlockEntity.getBlockState()));
+				level.scheduleTick(pos, skyboxBlockEntity.getBlockState().getBlock(), 1);
 			}
-			return InteractionResult.SUCCESS;
 		}
 		return InteractionResult.TRY_WITH_EMPTY_HAND;
 	}
@@ -111,11 +110,15 @@ public class SkyboxBlock extends BaseEntityBlock {
 			if (!(checkedEntity instanceof SkyboxBlockEntity)) continue;
 			if (skyboxLocation == ((SkyboxBlockEntity)checkedEntity).getSkyboxLocation()) continue;
 
-			((SkyboxBlockEntity) checkedEntity).setSkyboxLocation(skyboxLocation);
-			((SkyboxBlockEntity) checkedEntity).setBlur(blur);
-			level.scheduleTick(checkedPos, checkedEntity.getBlockState().getBlock(), 1);
-			level.gameEvent(GameEvent.BLOCK_CHANGE, checkedPos, GameEvent.Context.of(checkedEntity.getBlockState()));
-
+			if (checkedEntity instanceof SkyboxBlockEntity skyboxBlockEntity) {
+				if (skyboxLocation != null) {
+					skyboxBlockEntity.setSkyboxLocation(skyboxLocation);
+					skyboxBlockEntity.setBlur(blur);
+				}
+				skyboxBlockEntity.setChanged();
+				level.gameEvent(GameEvent.BLOCK_CHANGE, skyboxBlockEntity.getBlockPos(), GameEvent.Context.of(skyboxBlockEntity.getBlockState()));
+				level.scheduleTick(pos, skyboxBlockEntity.getBlockState().getBlock(), 1);
+			}
 			if (level instanceof ServerLevel serverlevel) {
 				serverlevel.sendParticles(ParticleTypes.WAX_OFF, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 2, 0.5F, 0.5F, 0.5F, 0.1F);
 			}
