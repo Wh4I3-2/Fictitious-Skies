@@ -107,6 +107,7 @@ public class SkyGeneratorBlock extends BaseEntityBlock {
 				if (entity != null) {
 					((SkyboxBlockEntity)targetEntity).setSkyboxLocation(entity.getSkybox().skyboxLocation());;
 					((SkyboxBlockEntity)targetEntity).setBlur(entity.getSkybox().blur());;
+					((SkyboxBlockEntity)targetEntity).setFallbackColor(entity.getSkybox().fallbackColor());;
 					targetEntity.setChanged();
 					level.gameEvent(GameEvent.BLOCK_CHANGE, targetEntity.getBlockPos(), GameEvent.Context.of(targetEntity.getBlockState()));
 					level.scheduleTick(targetPos, targetEntity.getBlockState().getBlock(), 1);

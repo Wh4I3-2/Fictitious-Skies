@@ -1,0 +1,6 @@
+{
+    "parent": "minecraft:item/generated",
+    "textures": {
+        "layer0": "fictitious_skies:item/sky_disk_tint_0"
+    }
+}

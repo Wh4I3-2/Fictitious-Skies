@@ -1,7 +1,7 @@
 package com.wh4i3.fictitiousskies.init;
 
 import com.wh4i3.fictitiousskies.FictitiousSkies;
-import com.wh4i3.fictitiousskies.item.BRollItem;
+import com.wh4i3.fictitiousskies.item.SkyDiskItem;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -21,20 +21,22 @@ public class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(FictitiousSkies.MODID);
     public static final List<DeferredItem<BlockItem>> BLOCK_ITEMS = new ArrayList<>();
 
-    public static final DeferredItem<BRollItem> B_ROLL = ITEMS.registerItem(
-        "b_roll", 
-        BRollItem::new, 
+    public static final DeferredItem<SkyDiskItem> SKY_DISK = ITEMS.registerItem(
+        "sky_disk",
+        SkyDiskItem::new,
         new Item.Properties()
-            .setId(itemId("b_roll"))
+            .setId(itemId("sky_disk"))
             .rarity(Rarity.UNCOMMON)
+            .useCooldown(0.4F)
             .stacksTo(1)
     );
-    public static final DeferredItem<BRollItem> EMPTY_SKY_DISK = ITEMS.registerItem(
+    public static final DeferredItem<SkyDiskItem> EMPTY_SKY_DISK = ITEMS.registerItem(
         "empty_sky_disk", 
-        BRollItem::new, 
+        SkyDiskItem::new,
         new Item.Properties()
             .setId(itemId("empty_sky_disk"))
             .rarity(Rarity.COMMON)
+            .useCooldown(0.4F)
             .stacksTo(64)
     );
 

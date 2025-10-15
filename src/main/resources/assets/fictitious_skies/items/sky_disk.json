@@ -1,0 +1,33 @@
+{
+  "model": {
+    "type": "minecraft:composite",
+    "models": [
+      {
+        "type": "minecraft:model",
+        "model": "fictitious_skies:item/sky_disk_tint_0",
+        "tints": [
+          {
+            "type": "minecraft:custom_model_data",
+            "index": 0,
+            "default": -6579300
+          }
+        ]
+      },
+      {
+        "type": "minecraft:model",
+        "model": "fictitious_skies:item/sky_disk_tint_1",
+        "tints": [
+          {
+            "type": "minecraft:custom_model_data",
+            "index": 1,
+            "default": -6579300
+          }
+        ]
+      },
+      {
+        "type": "minecraft:model",
+        "model": "fictitious_skies:item/sky_disk"
+      }
+    ]
+  }
+}

@@ -4,7 +4,6 @@ import com.mojang.logging.LogUtils;
 import com.wh4i3.fictitiousskies.client.ModShaders;
 import com.wh4i3.fictitiousskies.client.render.SkyGeneratorRenderer;
 import com.wh4i3.fictitiousskies.client.render.SkyboxBlockRenderer;
-import com.wh4i3.fictitiousskies.config.ClientConfig;
 import com.wh4i3.fictitiousskies.init.ModBlockEntities;
 import com.wh4i3.fictitiousskies.init.ModBlocks;
 import com.wh4i3.fictitiousskies.init.ModCreativeTabs;
@@ -20,7 +19,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 import org.slf4j.Logger;
@@ -37,14 +35,6 @@ public class FictitiousSkies {
         ModBlockEntities.BLOCK_ENTITIES.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
         ModCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
-
-        // Register ourselves for server and other game events we are interested in.
-        // Note that this is necessary if and only if we want *this* class (DimensionDelvers) to respond directly to events.
-        // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
-        //NeoForge.EVENT_BUS.register(this);
-
-        // Register our mod's ModConfigSpec so that FML can create and load the config file for us
-        modContainer.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
     }
 
     /**

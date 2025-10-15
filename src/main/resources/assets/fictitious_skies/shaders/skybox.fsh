@@ -90,23 +90,3 @@ void main() {
     //fragColor = mix(vec4(rd / 2.0 + vec3(0.5), 1.0), a, a.a);
     fragColor = texture(Sampler0, (getUV(rd)/2.0+0.25+getUVOffset(rd))/4.0);
 }
-
-/*
-uniform vec4 ColorModulator;
-uniform float FogStart;
-uniform float FogEnd;
-uniform vec2 ScreenSize;
-uniform vec4 FogColor;
-uniform mat4 ModelViewMatrix;
-uniform sampler2D Sampler0;
-
-in float vertexDistance;
-
-out vec4 fragColor;
-
-void main() {
-    vec2 uv = 2.5 * (gl_FragCoord.xy - 0.5 * ScreenSize.xy) / ScreenSize.yy;
-
-    fragColor = texture(Sampler0, uv);
-}
-*/

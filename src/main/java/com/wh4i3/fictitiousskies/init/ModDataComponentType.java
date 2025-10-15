@@ -19,12 +19,13 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class ModDataComponentType {
     public static final DeferredRegister.DataComponents DATA_COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, FictitiousSkies.MODID);
 
-    public record Skybox(ResourceLocation skyboxLocation, boolean blur) {
-        public static final Skybox EMPTY = new Skybox(ResourceLocation.withDefaultNamespace(""), true);
+    public record Skybox(ResourceLocation skyboxLocation, boolean blur, int fallbackColor) {
+        public static final Skybox EMPTY = new Skybox(ResourceLocation.withDefaultNamespace(""), true, 0xFF_FFFFFF);
 
         public static Codec<Skybox> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            ResourceLocation.CODEC.fieldOf("skyboxLocation").forGetter(Skybox::skyboxLocation),
-            Codec.BOOL.fieldOf("blur").forGetter(Skybox::blur)
+                ResourceLocation.CODEC.fieldOf("skyboxLocation").forGetter(Skybox::skyboxLocation),
+                Codec.BOOL.fieldOf("blur").forGetter(Skybox::blur),
+                Codec.INT.fieldOf("fallbackColor").forGetter(Skybox::fallbackColor)
         ).apply(inst, Skybox::new));
 
         public boolean isEmpty() {

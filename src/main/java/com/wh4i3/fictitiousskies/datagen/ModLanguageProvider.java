@@ -34,7 +34,7 @@ public class ModLanguageProvider extends LanguageProvider {
         addBlock(ModBlocks.ALT_INDESTRUCTIBLE_SKYBOX_BLOCK, "Shined Indestructible Sky Panel");
         addBlock(ModBlocks.SKY_GENERATOR, "Sky Projector");
 
-        addItem(ModItems.B_ROLL, "Sky Disk");
+        addItem(ModItems.SKY_DISK, "Sky Disk");
         addItem(ModItems.EMPTY_SKY_DISK, "Empty Sky Disk");
 
         // Adds a generic translation

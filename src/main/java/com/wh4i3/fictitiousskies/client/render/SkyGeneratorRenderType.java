@@ -1,6 +1,7 @@
 package com.wh4i3.fictitiousskies.client.render;
 
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -29,7 +30,8 @@ public final class SkyGeneratorRenderType {
                     .setTransparencyState(RenderStateShard.NO_TRANSPARENCY)
                     .setCullState(RenderStateShard.NO_CULL)
                     .setLightmapState(RenderStateShard.NO_LIGHTMAP)
-                    .setOverlayState(RenderStateShard.NO_OVERLAY).createCompositeState(false);
+                    .setOverlayState(RenderStateShard.NO_OVERLAY)
+                    .createCompositeState(false);
             return RenderType.create("skybox", DefaultVertexFormat.POSITION, VertexFormat.Mode.QUADS, 1536, true, false, rendertype$compositestate);
         }
     );
@@ -37,6 +39,22 @@ public final class SkyGeneratorRenderType {
     public static RenderType skybox(ResourceLocation texture, boolean blur) {
         return SKYBOX.apply(texture, blur);
     }
+
+    public static final RenderType FALLBACK = RenderType.create(
+            "skybox_fallback",
+            DefaultVertexFormat.POSITION_COLOR,
+            VertexFormat.Mode.QUADS,
+            1536,
+            false,
+            true,
+            RenderType.CompositeState.builder()
+                    .setShaderState(RenderType.POSITION_COLOR_SHADER)
+                    .setTransparencyState(RenderStateShard.NO_TRANSPARENCY)
+                    .setCullState(RenderStateShard.NO_CULL)
+                    .setLightmapState(RenderStateShard.NO_LIGHTMAP)
+                    .setOverlayState(RenderStateShard.NO_OVERLAY)
+                    .createCompositeState(false)
+    );
 
     private SkyGeneratorRenderType() {
     }

@@ -1,6 +1,0 @@
-{
-    "parent": "minecraft:item/generated",
-    "textures": {
-        "layer0": "fictitious_skies:item/b_roll_tint_1"
-    }
-}

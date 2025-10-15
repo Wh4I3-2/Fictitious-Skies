@@ -3,17 +3,12 @@ package com.wh4i3.fictitiousskies.block;
 import com.mojang.serialization.MapCodec;
 import com.wh4i3.fictitiousskies.block.blockentity.SkyboxBlockEntity;
 import com.wh4i3.fictitiousskies.init.ModDataComponentType;
-import com.wh4i3.fictitiousskies.init.ModItems;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -22,7 +17,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.phys.BlockHitResult;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -41,7 +35,7 @@ public class SkyboxBlock extends BaseEntityBlock {
 		super(properties);
 
 		this.registerDefaultState(stateDefinition.any()
-			.setValue(HAS_SKY, false)
+				.setValue(HAS_SKY, false)
 		);
 	}
 
@@ -52,7 +46,7 @@ public class SkyboxBlock extends BaseEntityBlock {
 		BlockEntity entity = level.getBlockEntity(pos);
 		if (entity == null) return;
 
-		updateSky(((SkyboxBlockEntity)entity).getSkyboxLocation(), ((SkyboxBlockEntity)entity).getBlur(), state, level, pos);
+		updateSky(((SkyboxBlockEntity)entity).getSkyboxLocation(), ((SkyboxBlockEntity)entity).getBlur(), ((SkyboxBlockEntity)entity).getFallbackColor(), state, level, pos);
 		
 		boolean empty = ((SkyboxBlockEntity)entity).getSkyboxLocation() == ModDataComponentType.Skybox.EMPTY.skyboxLocation();
 		level.setBlockAndUpdate(pos, state.setValue(HAS_SKY, !empty));
@@ -68,41 +62,7 @@ public class SkyboxBlock extends BaseEntityBlock {
 		return new SkyboxBlockEntity(pos, state);
 	}
 
-	@Override
-	protected InteractionResult useItemOn(@Nonnull ItemStack stack, @Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos, @Nonnull Player player, @Nonnull InteractionHand hand, @Nonnull BlockHitResult hitResult) {
-		if (stack == ItemStack.EMPTY) return InteractionResult.TRY_WITH_EMPTY_HAND;
-		if (stack.getItem() == ModItems.EMPTY_SKY_DISK.get()) {
-			ModDataComponentType.Skybox skybox = ModDataComponentType.Skybox.EMPTY;
-			BlockEntity targetEntity = level.getBlockEntity(pos);
-			if (targetEntity instanceof SkyboxBlockEntity) {
-				if (skybox != null) {
-					((SkyboxBlockEntity)targetEntity).setSkyboxLocation(skybox.skyboxLocation());
-					((SkyboxBlockEntity)targetEntity).setBlur(skybox.blur());;
-				}
-				targetEntity.setChanged();
-				level.gameEvent(GameEvent.BLOCK_CHANGE, targetEntity.getBlockPos(), GameEvent.Context.of(targetEntity.getBlockState()));
-				level.scheduleTick(pos, targetEntity.getBlockState().getBlock(), 1);
-			}
-			return InteractionResult.SUCCESS;
-		}
-		if (stack.has(ModDataComponentType.SKYBOX.get())) {
-			ModDataComponentType.Skybox skybox = stack.get(ModDataComponentType.SKYBOX.get());
-			BlockEntity targetEntity = level.getBlockEntity(pos);
-			if (targetEntity instanceof SkyboxBlockEntity) {
-				if (skybox != null) {
-					((SkyboxBlockEntity)targetEntity).setSkyboxLocation(skybox.skyboxLocation());;
-					((SkyboxBlockEntity)targetEntity).setBlur(skybox.blur());;
-				}
-				targetEntity.setChanged();
-				level.gameEvent(GameEvent.BLOCK_CHANGE, targetEntity.getBlockPos(), GameEvent.Context.of(targetEntity.getBlockState()));
-				level.scheduleTick(pos, targetEntity.getBlockState().getBlock(), 1);
-			}
-			return InteractionResult.SUCCESS;
-		}
-		return InteractionResult.TRY_WITH_EMPTY_HAND;
-	}
-
-	public void updateSky(ResourceLocation skyboxLocation, boolean blur, BlockState state, Level level, BlockPos pos) {
+	public void updateSky(ResourceLocation skyboxLocation, boolean blur, int fallbackColor, BlockState state, Level level, BlockPos pos) {
 		BlockPos[] positions = {pos.west(), pos.north(), pos.east(), pos.south(), pos.above(), pos.below()};
 		for (BlockPos checkedPos : positions) {
 			BlockEntity checkedEntity = level.getBlockEntity(checkedPos);
@@ -113,11 +73,14 @@ public class SkyboxBlock extends BaseEntityBlock {
 
 			((SkyboxBlockEntity) checkedEntity).setSkyboxLocation(skyboxLocation);
 			((SkyboxBlockEntity) checkedEntity).setBlur(blur);
+			((SkyboxBlockEntity) checkedEntity).setFallbackColor(fallbackColor);
+			BlockState checkedState = level.getBlockState(checkedPos);
+			level.setBlockAndUpdate(checkedPos, checkedState.setValue(HAS_SKY, !checkedState.getValue(HAS_SKY)));
 			level.scheduleTick(checkedPos, checkedEntity.getBlockState().getBlock(), 1);
 			level.gameEvent(GameEvent.BLOCK_CHANGE, checkedPos, GameEvent.Context.of(checkedEntity.getBlockState()));
 
 			if (level instanceof ServerLevel serverlevel) {
-				serverlevel.sendParticles(ParticleTypes.WAX_OFF, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 2, 0.5F, 0.5F, 0.5F, 0.1F);
+				serverlevel.sendParticles(ParticleTypes.WAX_OFF, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 1, 0.5F, 0.5F, 0.5F, 0.1F);
 			}
 		}
 	}
