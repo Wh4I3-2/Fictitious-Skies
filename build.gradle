@@ -14,6 +14,7 @@ tasks.withType(Copy).all {
 
 repositories {
     mavenLocal()
+    mavenCentral()
     maven { url = "https://api.modrinth.com/maven" }
     exclusiveContent {
         forRepository {
@@ -110,6 +111,10 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 
 dependencies {
+    compileOnly("org.projectlombok:lombok:1.18.42")
+    annotationProcessor("org.projectlombok:lombok:1.18.42")
+
+    // Optional mods
     implementation "curse.maven:sodium-394468:${sodium_version}"
     implementation "curse.maven:irisshaders-455508:${iris_version}"
 }

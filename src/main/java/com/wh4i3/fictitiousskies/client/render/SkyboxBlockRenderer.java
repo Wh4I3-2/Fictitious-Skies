@@ -54,6 +54,7 @@ public class SkyboxBlockRenderer<T extends SkyboxBlockEntity> implements BlockEn
 
 		if (shouldFallBack) {
 			int fallbackColor = blockEntity.getFallbackColor();
+			context.getBlockRenderDispatcher().renderSingleBlock();
 			this.renderCube(blockEntity, pose, buffer.getBuffer(SkyGeneratorRenderType.FALLBACK), fallbackColor + 0xFF_000000);
 			return;
 		} else {

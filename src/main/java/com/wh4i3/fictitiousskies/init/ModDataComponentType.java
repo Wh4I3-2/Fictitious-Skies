@@ -7,6 +7,8 @@ import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wh4i3.fictitiousskies.FictitiousSkies;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -15,6 +17,8 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.function.Function;
 
 public class ModDataComponentType {
     public static final DeferredRegister.DataComponents DATA_COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, FictitiousSkies.MODID);
@@ -32,6 +36,25 @@ public class ModDataComponentType {
             return skyboxLocation == ResourceLocation.withDefaultNamespace("");
         }
     }
+
+    public interface ISkyboxFallback {
+
+    }
+
+    public static class ColorSkyboxFallback implements ISkyboxFallback {
+        @Getter @Setter
+        private int color;
+
+        ColorSkyboxFallback(int color) {
+            this.color = color;
+        }
+
+        public static Codec<ColorSkyboxFallback> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+                Codec.INT.fieldOf("color").forGetter(ColorSkyboxFallback::getColor)
+        ).apply(inst, ColorSkyboxFallback::new));
+    }
+
+
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Skybox>> SKYBOX = register("skybox", Skybox.CODEC, null);
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<String>> CREDIT = register("credit", PrimitiveCodec.STRING, ByteBufCodecs.STRING_UTF8);
 

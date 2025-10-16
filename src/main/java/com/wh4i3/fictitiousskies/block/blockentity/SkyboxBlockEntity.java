@@ -39,10 +39,10 @@ public class SkyboxBlockEntity extends BlockEntity {
 	}
 
 	private int fallbackColor;
-	public void setFallbackColor(int fallbackColor) {
+	public void setFallback(int fallbackColor) {
 		this.fallbackColor = fallbackColor;
 	}
-	public int getFallbackColor() {
+	public int getFallback() {
 		return this.fallbackColor;
 	}
 
