@@ -35,7 +35,7 @@ public class SkyboxBlockEntity extends BlockEntity {
 		return this.blur;
 	}
 	public ModDataComponentType.Skybox getSkybox() {
-		return new ModDataComponentType.Skybox(this.skyboxLocation, this.blur);
+		return new ModDataComponentType.Skybox(this.skyboxLocation, this.blur, this.fallbackColor);
 	}
 
 	private int fallbackColor;

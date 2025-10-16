@@ -66,9 +66,10 @@ public class SkyboxBlockRenderer<T extends SkyboxBlockEntity> implements BlockEn
 
 				Uniform view = shader.getUniform("View");
 				if (view != null) {
-					float x = context.getBlockEntityRenderDispatcher().camera.getXRot();
-					float y = Mth.wrapDegrees(context.getBlockEntityRenderDispatcher().camera.getYRot());
-					view.set(x, y);
+					view.set(
+							context.getBlockEntityRenderDispatcher().camera.getXRot(),
+							context.getBlockEntityRenderDispatcher().camera.getYRot()
+					);
 				}
 
 				shader.apply();
