@@ -3,6 +3,8 @@ package com.wh4i3.fictitiousskies.init;
 import javax.annotation.Nullable;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.wh4i3.fictitiousskies.FictitiousSkies;
@@ -15,9 +17,14 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.entity.animal.Bee;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 public class ModDataComponentType {
@@ -37,21 +44,60 @@ public class ModDataComponentType {
         }
     }
 
-    public interface ISkyboxFallback {
+    public record SkyboxFallback(
+            SkyboxFallbackType type,
+            Optional<Integer> color,
+            Optional<ResourceLocation> texture,
+            Optional<BlockState> block
+    ) {
+        enum SkyboxFallbackType {
+            COLOR("color"),
+            TEXTURE("texture"),
+            BLOCK("block");
 
-    }
+            public static PrimitiveCodec<String> CODEC = new PrimitiveCodec<String>() {
+                @Override
+                public <T> DataResult<SkyboxFallback> read(final DynamicOps<T> ops, final T input) {
+                    return ops
+                            .getStringValue(input);
+                }
 
-    public static class ColorSkyboxFallback implements ISkyboxFallback {
-        @Getter @Setter
-        private int color;
+                @Override
+                public <T> T write(final DynamicOps<T> ops, final String value) {
+                    return ops.createString(value);
+                }
 
-        ColorSkyboxFallback(int color) {
-            this.color = color;
+                @Override
+                public String toString() {
+                    return "String";
+                }
+            };
+            @Getter
+            private final String id;
+
+            SkyboxFallbackType(String id) {
+                this.id = id;
+            }
         }
 
-        public static Codec<ColorSkyboxFallback> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-                Codec.INT.fieldOf("color").forGetter(ColorSkyboxFallback::getColor)
-        ).apply(inst, ColorSkyboxFallback::new));
+        public static final Codec<SkyboxFallback> CODEC;
+        static {
+            CODEC = RecordCodecBuilder.create(inst -> inst.group(
+                    new Codec<SkyboxFallbackType>().comapFlatMap(
+                            (name) -> {
+                                DataResult<String> result = DataResult.success(name);
+                                return result;
+                            },
+                            (name) -> {
+                                DataResult<SkyboxFallbackType> result = DataResult.success(name);
+                                return result;
+                            }
+                    ),
+                    Codec.INT.optionalFieldOf("color").forGetter(SkyboxFallback::color),
+                    ResourceLocation.CODEC.optionalFieldOf("texture").forGetter(SkyboxFallback::texture),
+                    BlockState.CODEC.optionalFieldOf("block").forGetter(SkyboxFallback::block),
+                    ).apply(inst, SkyboxFallback::new));
+        }
     }
 
 
