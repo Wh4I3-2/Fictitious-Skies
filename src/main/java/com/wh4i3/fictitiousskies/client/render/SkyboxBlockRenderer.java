@@ -5,12 +5,17 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.PoseStack.Pose;
+import com.wh4i3.fictitiousskies.FictitiousSkies;
 import com.wh4i3.fictitiousskies.block.SkyboxBlock;
 import com.wh4i3.fictitiousskies.block.blockentity.SkyboxBlockEntity;
 import com.wh4i3.fictitiousskies.client.ModShaders;
 import com.wh4i3.fictitiousskies.init.ModDataComponentType;
+import com.wh4i3.fictitiousskies.init.ModDataComponentType.Skybox;
+import com.wh4i3.fictitiousskies.init.ModDataComponentType.SkyboxFallback;
 
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -20,6 +25,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.ClientHooks;
 
 import javax.annotation.Nonnull;
 
@@ -31,7 +37,7 @@ public class SkyboxBlockRenderer<T extends SkyboxBlockEntity> implements BlockEn
 		this.context = context;
 	}
 
-	public void render(@Nonnull T blockEntity, float p_112651_, @Nonnull PoseStack poseStack, @Nonnull MultiBufferSource buffer, int p_112654_, int p_112655_) {
+	public void render(@Nonnull T blockEntity, float partialTick, @Nonnull PoseStack poseStack, @Nonnull MultiBufferSource buffer, int p_112654_, int p_112655_) {
 		boolean shouldFallBack = false;
 
 		try {
@@ -44,18 +50,28 @@ public class SkyboxBlockRenderer<T extends SkyboxBlockEntity> implements BlockEn
 		if (blockEntity.isRemoved()) return;
 		Level level = blockEntity.getLevel();
 		if (level == null) return;
-		if (blockEntity.getSkyboxLocation() == null) return;
-		if (blockEntity.getSkyboxLocation() == ModDataComponentType.Skybox.EMPTY.skyboxLocation()) return;
-		if (!ResourceLocation.isValidNamespace(blockEntity.getSkyboxLocation().getNamespace())) return;
-		if (!ResourceLocation.isValidPath(blockEntity.getSkyboxLocation().getPath())) return;
+
+		Skybox skybox = blockEntity.getSkybox();
+		if (skybox == null) return;
+
+		if (skybox.skyboxLocation() == null) return;
+		if (skybox.skyboxLocation() == Skybox.EMPTY.skyboxLocation()) return;
+		if (!ResourceLocation.isValidNamespace(skybox.skyboxLocation().getNamespace())) return;
+		if (!ResourceLocation.isValidPath(skybox.skyboxLocation().getPath())) return;
 		if (!blockEntity.getBlockState().getValue(SkyboxBlock.HAS_SKY)) return;
 
 		Pose pose = poseStack.last();
 
-		if (shouldFallBack) {
-			int fallbackColor = blockEntity.getFallbackColor();
-			context.getBlockRenderDispatcher().renderSingleBlock();
-			this.renderCube(blockEntity, pose, buffer.getBuffer(SkyGeneratorRenderType.FALLBACK), fallbackColor + 0xFF_000000);
+		if (shouldFallBack && skybox.fallback().isPresent()) {
+			SkyboxFallback fallback = skybox.fallback().get();
+
+			switch (skybox.fallback().get().type()) {
+				case SkyboxFallback.SkyboxFallbackType.COLOR: {
+					int fallbackColor = fallback.color().orElse(0);
+					this.renderCube(blockEntity, pose, buffer.getBuffer(SkyGeneratorRenderType.FALLBACK), fallbackColor + 0xFF_000000);
+				}
+			}
+
 			return;
 		} else {
 			CompiledShaderProgram shader = RenderSystem.setShader(ModShaders.SKYBOX);
@@ -73,14 +89,28 @@ public class SkyboxBlockRenderer<T extends SkyboxBlockEntity> implements BlockEn
 					);
 				}
 
+				float fovModifier = Mth.lerp(partialTick, Minecraft.getInstance().gameRenderer.oldFovModifier, Minecraft.getInstance().gameRenderer.fovModifier);
+
+				float fovVal = ClientHooks.getFieldOfView(
+						Minecraft.getInstance().gameRenderer,
+						Minecraft.getInstance().gameRenderer.getMainCamera(),
+						partialTick,
+						Minecraft.getInstance().options.fov().get(),
+						true
+				) * fovModifier;
+
+				Uniform fov = shader.getUniform("FOV");
+				if (fov != null) {
+					fov.set(
+							fovVal
+					);
+				}
+
 				shader.apply();
 			}
 		}
 
-		ResourceLocation location = blockEntity.getSkyboxLocation();
-		boolean blur = blockEntity.getBlur();
-
-		this.renderCube(blockEntity, pose, buffer.getBuffer(SkyGeneratorRenderType.skybox(location, blur)), 0xFF_FFFFFF);
+		this.renderCube(blockEntity, pose, buffer.getBuffer(SkyGeneratorRenderType.skybox(skybox.skyboxLocation(), skybox.blur())), 0xFF_FFFFFF);
 	}
 
 	private void renderCube(T blockEntity, Pose pose, VertexConsumer consumer, int hexColor) {

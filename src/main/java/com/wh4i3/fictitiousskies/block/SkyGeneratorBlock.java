@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.mojang.serialization.MapCodec;
+import com.wh4i3.fictitiousskies.FictitiousSkies;
 import com.wh4i3.fictitiousskies.block.blockentity.SkyGeneratorBlockEntity;
 import com.wh4i3.fictitiousskies.block.blockentity.SkyboxBlockEntity;
 
@@ -30,6 +31,7 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.ToIntFunction;
 
@@ -54,13 +56,13 @@ public class SkyGeneratorBlock extends BaseEntityBlock {
 	}
 
 	@Override
-	protected MapCodec<? extends BaseEntityBlock> codec() {
+	protected @NotNull MapCodec<? extends BaseEntityBlock> codec() {
 		return CODEC;
 	}
 
 
     @Override
-    protected InteractionResult useWithoutItem(@Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos, @Nonnull Player player, @Nonnull BlockHitResult result) {
+    protected @NotNull InteractionResult useWithoutItem(@Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos, @Nonnull Player player, @Nonnull BlockHitResult result) {
         if (state.getValue(HAS_ITEM) && level.getBlockEntity(pos) instanceof SkyGeneratorBlockEntity skyGeneratorBlockEntity) {
             skyGeneratorBlockEntity.popOutTheItem();
             return InteractionResult.SUCCESS;
@@ -70,14 +72,14 @@ public class SkyGeneratorBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected InteractionResult useItemOn(@Nonnull ItemStack stack, @Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos blockPos, @Nonnull Player player, @Nonnull InteractionHand hand, @Nonnull BlockHitResult result) {
+    protected @NotNull InteractionResult useItemOn(@Nonnull ItemStack stack, @Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos blockPos, @Nonnull Player player, @Nonnull InteractionHand hand, @Nonnull BlockHitResult result) {
         if (state.getValue(HAS_ITEM)) {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
         } else {
             ItemStack itemstack = player.getItemInHand(hand);
 			if (itemstack == ItemStack.EMPTY) return InteractionResult.TRY_WITH_EMPTY_HAND;
             InteractionResult interactionresult = SkyGeneratorBlockEntity.tryInsert(level, blockPos, itemstack, player);
-            return (InteractionResult)(!interactionresult.consumesAction() ? InteractionResult.TRY_WITH_EMPTY_HAND : interactionresult);
+            return (!interactionresult.consumesAction() ? InteractionResult.TRY_WITH_EMPTY_HAND : interactionresult);
         }
     }
 
@@ -85,11 +87,11 @@ public class SkyGeneratorBlock extends BaseEntityBlock {
 		builder.add(FACING, POWERED, HAS_ITEM);
 	}
 
-	protected BlockState rotate(@Nonnull BlockState state, @Nonnull Rotation rot) {
+	protected @NotNull BlockState rotate(@Nonnull BlockState state, @Nonnull Rotation rot) {
 		return state.setValue(FACING, rot.rotate(state.getValue(FACING)));
 	}
 
-	protected BlockState mirror(@Nonnull BlockState state, @Nonnull Mirror mirror) {
+	protected @NotNull BlockState mirror(@Nonnull BlockState state, @Nonnull Mirror mirror) {
 		return this.rotate(state, mirror.getRotation(state.getValue(FACING)));
 	}
 
@@ -105,9 +107,8 @@ public class SkyGeneratorBlock extends BaseEntityBlock {
 			if (targetEntity instanceof SkyboxBlockEntity) {
 				SkyGeneratorBlockEntity entity = (SkyGeneratorBlockEntity)level.getBlockEntity(pos);
 				if (entity != null) {
-					((SkyboxBlockEntity)targetEntity).setSkyboxLocation(entity.getSkybox().skyboxLocation());;
-					((SkyboxBlockEntity)targetEntity).setBlur(entity.getSkybox().blur());;
-					((SkyboxBlockEntity)targetEntity).setFallbackColor(entity.getSkybox().fallbackColor());;
+
+					((SkyboxBlockEntity)targetEntity).setSkybox(entity.getSkybox());
 					targetEntity.setChanged();
 					level.gameEvent(GameEvent.BLOCK_CHANGE, targetEntity.getBlockPos(), GameEvent.Context.of(targetEntity.getBlockState()));
 					level.scheduleTick(targetPos, targetEntity.getBlockState().getBlock(), 1);

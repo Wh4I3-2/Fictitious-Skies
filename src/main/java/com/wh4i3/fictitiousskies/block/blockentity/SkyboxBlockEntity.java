@@ -2,77 +2,60 @@ package com.wh4i3.fictitiousskies.block.blockentity;
 
 import javax.annotation.Nonnull;
 
+import com.mojang.serialization.DataResult;
+import com.wh4i3.fictitiousskies.FictitiousSkies;
 import com.wh4i3.fictitiousskies.init.ModBlockEntities;
-import com.wh4i3.fictitiousskies.init.ModDataComponentType;
+import com.wh4i3.fictitiousskies.init.ModDataComponentType.Skybox;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 
 public class SkyboxBlockEntity extends BlockEntity {
-	private ResourceLocation skyboxLocation;
-	public void setSkyboxLocation(@Nonnull ResourceLocation skyboxLocation) {
-		this.skyboxLocation = skyboxLocation;
-	}
-	public ResourceLocation getSkyboxLocation() {
-		return this.skyboxLocation;
-	}
-	private boolean blur;
-	public void setBlur(boolean blur) {
-		this.blur = blur;
-	}
-	public boolean getBlur() {
-		return this.blur;
-	}
-	public ModDataComponentType.Skybox getSkybox() {
-		return new ModDataComponentType.Skybox(this.skyboxLocation, this.blur, this.fallbackColor);
-	}
-
-	private int fallbackColor;
-	public void setFallback(int fallbackColor) {
-		this.fallbackColor = fallbackColor;
-	}
-	public int getFallback() {
-		return this.fallbackColor;
-	}
+	@Getter @Setter
+	private Skybox skybox;
 
 	public SkyboxBlockEntity(BlockPos pos, BlockState state) {
 		super(ModBlockEntities.SKYBOX_BLOCK_ENTITY.get(), pos, state);
 
-		this.skyboxLocation = ModDataComponentType.Skybox.EMPTY.skyboxLocation();
-		this.blur = ModDataComponentType.Skybox.EMPTY.blur();
-		this.fallbackColor = ModDataComponentType.Skybox.EMPTY.fallbackColor();
+		this.skybox = Skybox.EMPTY;
 	}
 
 	@Override
 	protected void saveAdditional(@Nonnull CompoundTag tag, @Nonnull HolderLookup.Provider registries) {
 	   	super.saveAdditional(tag, registries);
-		CompoundTag skyboxTag = new CompoundTag();
-		skyboxTag.putString("skyboxLocation", this.skyboxLocation.toString());
-		skyboxTag.putBoolean("blur", this.blur);
-		skyboxTag.putInt("fallbackColor", this.fallbackColor);
-		tag.put("skybox", skyboxTag);
+		DataResult<Tag> result = Skybox.CODEC.encode(this.skybox, NbtOps.INSTANCE, new CompoundTag());
+
+		if (result.isSuccess()) {
+			tag.put("skybox", result.getOrThrow());
+		}
 	}
 
 	@Override
 	protected void loadAdditional(@Nonnull CompoundTag tag, @Nonnull HolderLookup.Provider registries) {
       	super.loadAdditional(tag, registries);
 		CompoundTag skyboxTag = (CompoundTag) tag.get("skybox");
-		if (skyboxTag != null) {
-			this.skyboxLocation = ResourceLocation.parse(skyboxTag.getString("skyboxLocation"));
-			this.blur = skyboxTag.getBoolean("blur");
-			this.fallbackColor = skyboxTag.getInt("fallbackColor");
+		DataResult<Skybox> result = Skybox.CODEC.parse(NbtOps.INSTANCE, skyboxTag);
+
+		if (result.isSuccess()) {
+			this.skybox = result.getOrThrow();
+			return;
 		}
+
+		this.skybox = Skybox.EMPTY;
     }
 
     @Override

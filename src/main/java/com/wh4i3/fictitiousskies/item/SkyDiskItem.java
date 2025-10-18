@@ -32,17 +32,17 @@ public class SkyDiskItem extends Item {
         super(properties);
     }
 
-    public static ItemStack createSkyDiskItem(ResourceLocation skyboxLocation, boolean blur, int fallbackColor, ResourceLocation modelLocation, String credit) {
-        return createSkyDiskItem(skyboxLocation, blur, fallbackColor, modelLocation, credit, 0x7492bf, 0x82ddee);
+    public static ItemStack createSkyDiskItem(ModDataComponentType.Skybox skybox, ResourceLocation modelLocation, String credit) {
+        return createSkyDiskItem(skybox, modelLocation, credit, 0x7492bf, 0x82ddee);
     }
 
-    public static ItemStack createSkyDiskItem(ResourceLocation skyboxLocation, boolean blur, int fallbackColor, ResourceLocation modelLocation, String credit, int color) {
-        return createSkyDiskItem(skyboxLocation, blur, fallbackColor, modelLocation, credit, color, color);
+    public static ItemStack createSkyDiskItem(ModDataComponentType.Skybox skybox, ResourceLocation modelLocation, String credit, int color) {
+        return createSkyDiskItem(skybox, modelLocation, credit, color, color);
     }
 
-    public static ItemStack createSkyDiskItem(ResourceLocation skyboxLocation, boolean blur, int fallbackColor, ResourceLocation modelLocation, String credit, int color0, int color1) {
+    public static ItemStack createSkyDiskItem(ModDataComponentType.Skybox skybox, ResourceLocation modelLocation, String credit, int color0, int color1) {
         ItemStack stack = new ItemStack(ModItems.SKY_DISK.get());
-        stack.set(ModDataComponentType.SKYBOX, new ModDataComponentType.Skybox(skyboxLocation, blur, fallbackColor));
+        stack.set(ModDataComponentType.SKYBOX, skybox);
         stack.set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(List.of(), List.of(), List.of(), List.of(color0, color1)));
         if (modelLocation == null) {
             modelLocation = FictitiousSkies.id("sky_disk");
@@ -53,7 +53,7 @@ public class SkyDiskItem extends Item {
     }
 
     public static ItemStack empty() {
-        return createSkyDiskItem(null, false, 0xFF_FFFFFF, null, null);
+        return createSkyDiskItem(null, null, null);
     }
 
     public static boolean isEmpty(ItemStack itemStack) {
@@ -84,13 +84,11 @@ public class SkyDiskItem extends Item {
                 BlockEntity targetEntity = level.getBlockEntity(pos);
 
                 if (targetEntity instanceof SkyboxBlockEntity skyboxBlockEntity) {
-                    if (skyboxBlockEntity.getSkyboxLocation() == skybox.skyboxLocation()) {
+                    if (skyboxBlockEntity.getSkybox().skyboxLocation() == skybox.skyboxLocation()) {
                         return InteractionResult.TRY_WITH_EMPTY_HAND;
                     }
 
-                    skyboxBlockEntity.setSkyboxLocation(skybox.skyboxLocation());
-                    skyboxBlockEntity.setBlur(skybox.blur());
-                    skyboxBlockEntity.setFallbackColor(skybox.fallbackColor());
+                    skyboxBlockEntity.setSkybox(skybox);
 
                     targetEntity.setChanged();
                     level.gameEvent(GameEvent.BLOCK_CHANGE, targetEntity.getBlockPos(), GameEvent.Context.of(targetEntity.getBlockState()));
@@ -108,12 +106,13 @@ public class SkyDiskItem extends Item {
 
             if (targetEntity instanceof SkyboxBlockEntity skyboxBlockEntity) {
                 if (skybox != null) {
-                    if (skyboxBlockEntity.getSkyboxLocation() == skybox.skyboxLocation()) {
+                    if (skyboxBlockEntity.getSkybox() == null) {
                         return InteractionResult.TRY_WITH_EMPTY_HAND;
                     }
-                    skyboxBlockEntity.setSkyboxLocation(skybox.skyboxLocation());
-                    skyboxBlockEntity.setBlur(skybox.blur());
-                    skyboxBlockEntity.setFallbackColor(skybox.fallbackColor());
+                    if (skyboxBlockEntity.getSkybox().skyboxLocation() == skybox.skyboxLocation()) {
+                        return InteractionResult.TRY_WITH_EMPTY_HAND;
+                    }
+                    skyboxBlockEntity.setSkybox(skybox);
                 } else {
                     return InteractionResult.TRY_WITH_EMPTY_HAND;
                 }

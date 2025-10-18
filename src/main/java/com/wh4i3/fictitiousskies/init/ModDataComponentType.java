@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -21,26 +22,32 @@ import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
 public class ModDataComponentType {
     public static final DeferredRegister.DataComponents DATA_COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, FictitiousSkies.MODID);
 
-    public record Skybox(ResourceLocation skyboxLocation, boolean blur, int fallbackColor) {
-        public static final Skybox EMPTY = new Skybox(ResourceLocation.withDefaultNamespace(""), true, 0xFF_FFFFFF);
+    public record Skybox(
+            ResourceLocation skyboxLocation,
+            boolean blur,
+            Optional<SkyboxFallback> fallback
+    ) {
+        public static final Skybox EMPTY = new Skybox(ResourceLocation.withDefaultNamespace(""), true, Optional.of(SkyboxFallback.DEFAULT));
 
         public static Codec<Skybox> CODEC = RecordCodecBuilder.create(inst -> inst.group(
                 ResourceLocation.CODEC.fieldOf("skyboxLocation").forGetter(Skybox::skyboxLocation),
                 Codec.BOOL.fieldOf("blur").forGetter(Skybox::blur),
-                Codec.INT.fieldOf("fallbackColor").forGetter(Skybox::fallbackColor)
+                SkyboxFallback.CODEC.lenientOptionalFieldOf("fallback").forGetter(Skybox::fallback)
         ).apply(inst, Skybox::new));
 
         public boolean isEmpty() {
-            return skyboxLocation == ResourceLocation.withDefaultNamespace("");
+            return Objects.equals(skyboxLocation, ResourceLocation.withDefaultNamespace(""));
         }
     }
 
@@ -50,54 +57,27 @@ public class ModDataComponentType {
             Optional<ResourceLocation> texture,
             Optional<BlockState> block
     ) {
-        enum SkyboxFallbackType {
-            COLOR("color"),
-            TEXTURE("texture"),
-            BLOCK("block");
-
-            public static PrimitiveCodec<String> CODEC = new PrimitiveCodec<String>() {
-                @Override
-                public <T> DataResult<SkyboxFallback> read(final DynamicOps<T> ops, final T input) {
-                    return ops
-                            .getStringValue(input);
-                }
-
-                @Override
-                public <T> T write(final DynamicOps<T> ops, final String value) {
-                    return ops.createString(value);
-                }
-
-                @Override
-                public String toString() {
-                    return "String";
-                }
-            };
-            @Getter
-            private final String id;
-
-            SkyboxFallbackType(String id) {
-                this.id = id;
-            }
+        public enum SkyboxFallbackType {
+            COLOR,
+            TEXTURE,
+            BLOCK,
         }
 
-        public static final Codec<SkyboxFallback> CODEC;
-        static {
-            CODEC = RecordCodecBuilder.create(inst -> inst.group(
-                    new Codec<SkyboxFallbackType>().comapFlatMap(
-                            (name) -> {
-                                DataResult<String> result = DataResult.success(name);
-                                return result;
-                            },
-                            (name) -> {
-                                DataResult<SkyboxFallbackType> result = DataResult.success(name);
-                                return result;
-                            }
-                    ),
-                    Codec.INT.optionalFieldOf("color").forGetter(SkyboxFallback::color),
-                    ResourceLocation.CODEC.optionalFieldOf("texture").forGetter(SkyboxFallback::texture),
-                    BlockState.CODEC.optionalFieldOf("block").forGetter(SkyboxFallback::block),
-                    ).apply(inst, SkyboxFallback::new));
-        }
+        public static final SkyboxFallback DEFAULT = new SkyboxFallback(
+                SkyboxFallbackType.COLOR,
+                Optional.of(0xFFFFFF),
+                Optional.empty(), Optional.empty()
+        );
+
+        public static final Codec<SkyboxFallback> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+                Codec.stringResolver(
+                        SkyboxFallbackType::name,
+                        SkyboxFallbackType::valueOf
+                ).fieldOf("type").forGetter(SkyboxFallback::type),
+                Codec.INT.lenientOptionalFieldOf("color").forGetter(SkyboxFallback::color),
+                ResourceLocation.CODEC.lenientOptionalFieldOf("texture").forGetter(SkyboxFallback::texture),
+                BlockState.CODEC.lenientOptionalFieldOf("block").forGetter(SkyboxFallback::block)
+        ).apply(inst, SkyboxFallback::new));
     }
 
 

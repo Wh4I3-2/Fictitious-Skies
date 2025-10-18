@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.wh4i3.fictitiousskies.FictitiousSkies;
 import com.wh4i3.fictitiousskies.block.SkyGeneratorBlock;
 import com.wh4i3.fictitiousskies.init.ModBlockEntities;
 import com.wh4i3.fictitiousskies.init.ModBlocks;
