@@ -1,6 +1,7 @@
 package com.wh4i3.fictitiousskies.init;
 
 import javax.annotation.Nullable;
+import javax.swing.text.html.Option;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -55,7 +56,8 @@ public class ModDataComponentType {
             SkyboxFallbackType type,
             Optional<Integer> color,
             Optional<ResourceLocation> texture,
-            Optional<BlockState> block
+            Optional<BlockState> block,
+            Optional<Boolean> forceFallback
     ) {
         public enum SkyboxFallbackType {
             COLOR,
@@ -63,21 +65,39 @@ public class ModDataComponentType {
             BLOCK,
         }
 
-        public static final SkyboxFallback DEFAULT = new SkyboxFallback(
-                SkyboxFallbackType.COLOR,
-                Optional.of(0xFFFFFF),
-                Optional.empty(), Optional.empty()
-        );
+        public static final SkyboxFallback DEFAULT = ofColor(0xFFFFFF);
 
         public static final Codec<SkyboxFallback> CODEC = RecordCodecBuilder.create(inst -> inst.group(
                 Codec.stringResolver(
                         SkyboxFallbackType::name,
                         SkyboxFallbackType::valueOf
                 ).fieldOf("type").forGetter(SkyboxFallback::type),
-                Codec.INT.lenientOptionalFieldOf("color").forGetter(SkyboxFallback::color),
+                Codec.stringResolver(
+                        (toEncode) -> "#" + Integer.toHexString(toEncode),
+						Integer::decode
+                ).lenientOptionalFieldOf("color").forGetter(SkyboxFallback::color),
                 ResourceLocation.CODEC.lenientOptionalFieldOf("texture").forGetter(SkyboxFallback::texture),
-                BlockState.CODEC.lenientOptionalFieldOf("block").forGetter(SkyboxFallback::block)
+                BlockState.CODEC.lenientOptionalFieldOf("block").forGetter(SkyboxFallback::block),
+                Codec.BOOL.lenientOptionalFieldOf("forceFallback").forGetter(SkyboxFallback::forceFallback)
         ).apply(inst, SkyboxFallback::new));
+
+        public SkyboxFallback duplicate() {
+            return new SkyboxFallback(type, color, texture, block, forceFallback);
+        }
+
+        public static SkyboxFallback ofColor(int color) {
+            return new SkyboxFallback(SkyboxFallbackType.COLOR, Optional.of(color), Optional.empty(), Optional.empty(), Optional.empty());
+        }
+        public static SkyboxFallback ofTexture(ResourceLocation texture) {
+            return new SkyboxFallback(SkyboxFallbackType.TEXTURE, Optional.empty(), Optional.of(texture), Optional.empty(), Optional.empty());
+        }
+        public static SkyboxFallback ofBlock(BlockState block) {
+            return new SkyboxFallback(SkyboxFallbackType.BLOCK, Optional.empty(), Optional.empty(), Optional.of(block), Optional.empty());
+        }
+
+        public SkyboxFallback withForceFallback(boolean forceFallback) {
+            return new SkyboxFallback(type, color, texture, block, Optional.of(forceFallback));
+        }
     }
 
 

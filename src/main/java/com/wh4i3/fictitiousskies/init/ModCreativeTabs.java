@@ -7,7 +7,9 @@ import com.wh4i3.fictitiousskies.init.ModDataComponentType.SkyboxFallback;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -28,9 +30,7 @@ public class ModCreativeTabs {
                                         new Skybox(
                                                 FictitiousSkies.id("textures/environment/starmap_2020.png"),
                                                 true,
-                                                Optional.of(new SkyboxFallback(
-                                                        SkyboxFallback.SkyboxFallbackType.COLOR, Optional.of(0x1A1919), Optional.empty(), Optional.empty()
-                                                ))
+                                                Optional.of(SkyboxFallback.ofColor(0x1A1919))
                                         ),
                                         null,
                                         "NASA - Deep Star Maps 2020",
@@ -40,9 +40,7 @@ public class ModCreativeTabs {
                                         new Skybox(
                                                 FictitiousSkies.id("textures/environment/glast.png"),
                                                 true,
-                                                Optional.of(new SkyboxFallback(
-                                                        SkyboxFallback.SkyboxFallbackType.COLOR, Optional.of(0x100C20), Optional.empty(), Optional.empty()
-                                                ))
+                                                Optional.of(SkyboxFallback.ofColor(0x100C20))
                                         ),
                                         null,
                                         "NASA - Simulations of the Gamma-Ray Sky",
@@ -52,9 +50,7 @@ public class ModCreativeTabs {
                                         new Skybox(
                                                 FictitiousSkies.id("textures/environment/tycho_skymap.png"),
                                                 true,
-                                                Optional.of(new SkyboxFallback(
-                                                        SkyboxFallback.SkyboxFallbackType.COLOR, Optional.of(0x120D0A), Optional.empty(), Optional.empty()
-                                                ))
+                                                Optional.of(SkyboxFallback.ofColor(0x120D0A))
                                         ),
                                         null,
                                         "NASA - The Tycho Catalog Skymap Version 2.0",
@@ -65,9 +61,7 @@ public class ModCreativeTabs {
                                         new Skybox(
                                                 FictitiousSkies.id("textures/environment/hilly_terrain_01.png"),
                                                 true,
-                                                Optional.of(new SkyboxFallback(
-                                                        SkyboxFallback.SkyboxFallbackType.COLOR, Optional.of(0x8eb1c0), Optional.empty(), Optional.empty()
-                                                ))
+                                                Optional.of(SkyboxFallback.ofColor(0x8eb1c0))
                                         ),
                                         null,
                                         "Sergej Majboroda, Jarod Guest - Hilly Terrain 01 (Pure Sky)",
@@ -77,9 +71,7 @@ public class ModCreativeTabs {
                                         new Skybox(
                                                 FictitiousSkies.id("textures/environment/overcast_soil.png"),
                                                 true,
-                                                Optional.of(new SkyboxFallback(
-                                                        SkyboxFallback.SkyboxFallbackType.COLOR, Optional.of(0xb3b1b0), Optional.empty(), Optional.empty()
-                                                ))
+                                                Optional.of(SkyboxFallback.ofColor(0xb3b1b0))
                                         ),
                                         null,
                                         "Sergej Majboroda, Jarod Guest - Overcast Soil (Pure Sky)",
@@ -89,9 +81,7 @@ public class ModCreativeTabs {
                                         new Skybox(
                                                 FictitiousSkies.id("textures/environment/sunflowers.png"),
                                                 true,
-                                                Optional.of(new SkyboxFallback(
-                                                        SkyboxFallback.SkyboxFallbackType.COLOR, Optional.of(0x597489), Optional.empty(), Optional.empty()
-                                                ))
+                                                Optional.of(SkyboxFallback.ofColor(0x597489))
                                         ),
                                         null,
                                         "Sergej Majboroda, Jarod Guest - Sunflowers (Pure Sky)",
@@ -101,9 +91,7 @@ public class ModCreativeTabs {
                                         new Skybox(
                                                 FictitiousSkies.id("textures/environment/mud_road.png"),
                                                 true,
-                                                Optional.of(new SkyboxFallback(
-                                                        SkyboxFallback.SkyboxFallbackType.COLOR, Optional.of(0x8f8e91), Optional.empty(), Optional.empty()
-                                                ))
+                                                Optional.of(SkyboxFallback.ofColor(0x8f8e91))
                                         ),
                                         null,
                                         "Sergey Rudavin, Jarod Guest - Mud Road (Pure Sky)",
@@ -113,9 +101,7 @@ public class ModCreativeTabs {
                                         new Skybox(
                                                 FictitiousSkies.id("textures/environment/aristea_wreck.png"),
                                                 true,
-                                                Optional.of(new SkyboxFallback(
-                                                        SkyboxFallback.SkyboxFallbackType.COLOR, Optional.of(0x2d5c9a), Optional.empty(), Optional.empty()
-                                                ))
+                                                Optional.of(SkyboxFallback.ofColor(0x2d5c9a))
                                         ),
                                         null,
                                         "Greg Zaal, Jarod Guest - Aristea Wreck (Pure Sky)",
@@ -125,9 +111,7 @@ public class ModCreativeTabs {
                                         new Skybox(
                                                 FictitiousSkies.id("textures/environment/belfast_sunset.png"),
                                                 true,
-                                                Optional.of(new SkyboxFallback(
-                                                        SkyboxFallback.SkyboxFallbackType.COLOR, Optional.of(0xbdc2d6), Optional.empty(), Optional.empty()
-                                                ))
+                                                Optional.of(SkyboxFallback.ofColor(0xbdc2d6))
                                         ),
                                         null,
                                         "Dimitrios Savva, Greg Zaal, Jarod Guest - Belfast Sunset (Pure Sky)",
@@ -137,9 +121,17 @@ public class ModCreativeTabs {
                                         new Skybox(
                                                 FictitiousSkies.id("textures/environment/kloofendal_misty_morning.png"),
                                                 true,
-                                                Optional.of(new SkyboxFallback(
-                                                        SkyboxFallback.SkyboxFallbackType.COLOR, Optional.of(0xb5b6bb), Optional.empty(), Optional.empty()
-                                                ))
+                                                Optional.of(SkyboxFallback.ofColor(0xb5b6bb))
+                                        ),
+                                        null,
+                                        "Greg Zaal - Kloofendal Misty Morning (Pure Sky)",
+                                        0x9aa1ac, 0xd1d4d8
+                                ));
+                                output.accept(SkyDiskItem.createSkyDiskItem(
+                                        new Skybox(
+                                                FictitiousSkies.id("textures/environment/kloofendal_misty_morning.png"),
+                                                true,
+                                                Optional.of(SkyboxFallback.ofColor(0xb5b6bb))
                                         ),
                                         null,
                                         "Greg Zaal - Kloofendal Misty Morning (Pure Sky)",

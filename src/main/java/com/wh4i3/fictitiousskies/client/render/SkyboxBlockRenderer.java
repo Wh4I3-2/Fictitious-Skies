@@ -13,19 +13,30 @@ import com.wh4i3.fictitiousskies.init.ModDataComponentType;
 import com.wh4i3.fictitiousskies.init.ModDataComponentType.Skybox;
 import com.wh4i3.fictitiousskies.init.ModDataComponentType.SkyboxFallback;
 
+import net.caffeinemc.mods.sodium.client.render.chunk.compile.pipeline.BlockRenderer;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.SimpleBakedModel;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.lighting.BlockLightEngine;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.ClientHooks;
+import net.neoforged.neoforge.client.model.data.ModelData;
 
 import javax.annotation.Nonnull;
 
@@ -38,11 +49,11 @@ public class SkyboxBlockRenderer<T extends SkyboxBlockEntity> implements BlockEn
 	}
 
 	public void render(@Nonnull T blockEntity, float partialTick, @Nonnull PoseStack poseStack, @Nonnull MultiBufferSource buffer, int p_112654_, int p_112655_) {
-		boolean shouldFallBack = false;
+		boolean shouldFallback = false;
 
 		try {
 			if (net.irisshaders.iris.api.v0.IrisApi.getInstance().isShaderPackInUse()) {
-				shouldFallBack = true;
+				shouldFallback = true;
 			}
 		} catch (NoClassDefFoundError ignored) {}
 
@@ -62,13 +73,56 @@ public class SkyboxBlockRenderer<T extends SkyboxBlockEntity> implements BlockEn
 
 		Pose pose = poseStack.last();
 
-		if (shouldFallBack && skybox.fallback().isPresent()) {
+		if (skybox.fallback().isPresent()) {
+			if (skybox.fallback().get().forceFallback().orElse(false)) {
+				shouldFallback = true;
+			}
+		}
+
+		if (shouldFallback && skybox.fallback().isPresent()) {
 			SkyboxFallback fallback = skybox.fallback().get();
 
-			switch (skybox.fallback().get().type()) {
+			switch (fallback.type()) {
 				case SkyboxFallback.SkyboxFallbackType.COLOR: {
 					int fallbackColor = fallback.color().orElse(0);
 					this.renderCube(blockEntity, pose, buffer.getBuffer(SkyGeneratorRenderType.FALLBACK), fallbackColor + 0xFF_000000);
+					break;
+				}
+				case SkyboxFallback.SkyboxFallbackType.TEXTURE: {
+					ResourceLocation texture = fallback.texture().orElse(ResourceLocation.withDefaultNamespace("block/stone"));
+					this.renderCube(blockEntity, pose, buffer.getBuffer(RenderType.guiTextured(texture)), 0xFF_FFFFFF);
+					break;
+				}
+				case SkyboxFallback.SkyboxFallbackType.BLOCK: {
+					BlockState blockState = fallback.block().orElse(Blocks.STONE.defaultBlockState());
+					BakedModel model = context.getBlockRenderDispatcher().getBlockModel(blockState);
+					context.getBlockRenderDispatcher().getModelRenderer().tesselateWithoutAO(
+							blockEntity.getLevel(),
+							model,
+							blockState,
+							blockEntity.getBlockPos(),
+							poseStack,
+							buffer.getBuffer(RenderType.CUTOUT),
+							true,
+							RandomSource.create(),
+							blockState.getSeed(blockEntity.getBlockPos()),
+							0,
+							ModelData.EMPTY, 
+							RenderType.CUTOUT
+							/*BlockAndTintGetter level,
+							BakedModel model,
+							BlockState state,
+							BlockPos pos,
+							PoseStack poseStack,
+							VertexConsumer consumer,
+							boolean checkSides,
+							RandomSource random,
+							long seed,
+							int packedOverlay,
+							ModelData modelData,
+							RenderType renderType
+					*/);
+					break;
 				}
 			}
 
